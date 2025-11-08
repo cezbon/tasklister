@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: tasklister_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tasklister_net
+
+  backend:
+    container_name: tasklister_backend
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    restart: always
+    env_file:
+      - ./.env
+    ports:
+      - "127.0.0.1:5000:5000"
+    depends_on:
+      - db
+    networks:
+      - tasklister_net
+
+  frontend:
+    container_name: tasklister_frontend
+    build:
+      context: .
+      dockerfile: frontend.Dockerfile
+      args:
+        REACT_APP_API_URL: ${REACT_APP_API_URL}
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - tasklister_net
+
+networks:
+  tasklister_net:
+    driver: bridge
+
+volumes:
+  postgres_data:
