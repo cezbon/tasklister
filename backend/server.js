@@ -33,10 +33,7 @@ pool.query('SELECT NOW()', (err, res) => {
         console.error('❌ Błąd połączenia z bazą danych:', err.message);
         console.error('💡 Sprawdź konfigurację w pliku .env:');
         console.error('   - DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT');
-        console.error('   - Upewnij się, że baza danych PostgreSQL jest uruchomiona');
-        console.error('   - Sprawdź czy baza danych "tasklister" istnieje');
-        console.error('   - Uruchom: createdb tasklister (jeśli baza nie istnieje)');
-        console.error('   - Uruchom: psql -U postgres -d tasklister -f schema.sql (aby utworzyć tabele)');
+        // Usunięto błędy specyficzne dla lokalnego dev, ponieważ w Dockerze będą inne
     } else {
         console.log('✅ Połączono z bazą danych PostgreSQL');
         console.log(`   Baza: ${process.env.DB_NAME || 'tasklister'}`);
@@ -48,12 +45,43 @@ pool.query('SELECT NOW()', (err, res) => {
 // MIDDLEWARE
 // =====================================================
 
-app.use(cors());
+// *** POCZĄTEK MODYFIKACJI CORS ***
+// Konfiguracja CORS na podstawie Twojego pliku .env
+const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
+
+if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
+    console.warn('⚠️ OSTRZEŻENIE: Serwer działa w trybie produkcyjnym, ale zmienna ALLOWED_ORIGINS nie jest ustawiona. Domyślnie CORS jest wyłączony.');
+}
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Pozwól na zapytania z dozwolonych domen (lub jeśli origin nie istnieje, np. z Postmana)
+        // W trybie innym niż 'production' pozwoli na wszystko.
+        if (process.env.NODE_ENV !== 'production' || !origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.error(`Odrzucono zapytanie CORS z domeny: ${origin}`);
+            callback(new Error('Niedozwolone przez CORS'));
+        }
+    },
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+// Obsługa zapytań OPTIONS (pre-flight)
+app.options('*', cors(corsOptions));
+// *** KONIEC MODYFIKACJI CORS ***
+
+
 app.use(express.json());
 
 // Middleware do logowania requestów
 app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    // Loguj tylko jeśli nie jest to tryb testowy
+    if (process.env.NODE_ENV !== 'test') {
+        console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    }
     next();
 });
 
@@ -306,7 +334,7 @@ app.get('/api/:slug/tasks', authenticateToken, async (req, res) => {
 
     try {
         const result = await pool.query(`
-            SELECT 
+            SELECT
                 t.id,
                 t.text,
                 t.status,
@@ -318,7 +346,7 @@ app.get('/api/:slug/tasks', authenticateToken, async (req, res) => {
                 t.edited_by_name,
                 t.edited_at
             FROM tasks t
-            JOIN instances i ON t.instance_id = i.id
+                     JOIN instances i ON t.instance_id = i.id
             WHERE i.slug = $1
             ORDER BY t.created_at DESC
         `, [slug]);
@@ -355,7 +383,7 @@ app.post('/api/:slug/tasks', authenticateToken, async (req, res) => {
         const result = await pool.query(`
             INSERT INTO tasks (instance_id, text, status, created_by_id, created_by_name)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING *
+                RETURNING *
         `, [instanceId, text, 'available', userId, username]);
 
         res.status(201).json(result.rows[0]);
@@ -372,13 +400,13 @@ app.patch('/api/:slug/tasks/:taskId/take', authenticateToken, async (req, res) =
 
     try {
         const result = await pool.query(`
-            UPDATE tasks 
-            SET status = 'taken', 
-                owner_id = $1, 
-                owner_name = $2, 
+            UPDATE tasks
+            SET status = 'taken',
+                owner_id = $1,
+                owner_name = $2,
                 taken_at = CURRENT_TIMESTAMP
             WHERE id = $3 AND status = 'available'
-            RETURNING *
+                RETURNING *
         `, [userId, username, taskId]);
 
         if (result.rows.length === 0) {
@@ -399,11 +427,11 @@ app.patch('/api/:slug/tasks/:taskId/complete', authenticateToken, async (req, re
 
     try {
         const result = await pool.query(`
-            UPDATE tasks 
-            SET status = 'completed', 
+            UPDATE tasks
+            SET status = 'completed',
                 completed_at = CURRENT_TIMESTAMP
             WHERE id = $1 AND owner_id = $2 AND status = 'taken'
-            RETURNING *
+                RETURNING *
         `, [taskId, userId]);
 
         if (result.rows.length === 0) {
@@ -424,13 +452,13 @@ app.patch('/api/:slug/tasks/:taskId/return', authenticateToken, async (req, res)
 
     try {
         const result = await pool.query(`
-            UPDATE tasks 
-            SET status = 'available', 
-                owner_id = NULL, 
-                owner_name = NULL, 
+            UPDATE tasks
+            SET status = 'available',
+                owner_id = NULL,
+                owner_name = NULL,
                 taken_at = NULL
             WHERE id = $1 AND owner_id = $2 AND status = 'taken'
-            RETURNING *
+                RETURNING *
         `, [taskId, userId]);
 
         if (result.rows.length === 0) {
@@ -470,13 +498,13 @@ app.patch('/api/:slug/tasks/:taskId', authenticateToken, async (req, res) => {
         }
 
         const result = await pool.query(`
-            UPDATE tasks 
-            SET text = $1, 
-                edited_by_id = $2, 
-                edited_by_name = $3, 
+            UPDATE tasks
+            SET text = $1,
+                edited_by_id = $2,
+                edited_by_name = $3,
                 edited_at = CURRENT_TIMESTAMP
             WHERE id = $4
-            RETURNING *
+                RETURNING *
         `, [text, userId, username, taskId]);
 
         res.json(result.rows[0]);
@@ -539,7 +567,7 @@ app.get('/api/check-instance/:slug', async (req, res) => {
 
 app.listen(PORT, () => {
     console.log(`🚀 Serwer działa na porcie ${PORT}`);
-    console.log(`📍 API dostępne pod: http://localhost:${PORT}/api`);
+    console.log(`📍 Dostępny w sieci Docker pod adresem http://backend:${PORT}`);
 });
 
 // Graceful shutdown
