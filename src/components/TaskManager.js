@@ -1,5 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Check, X, Edit2, Trash2, User, LogIn, Clock, RefreshCw, Hand, Users, History, Home, FolderOpen, QrCode, Share2, Shield, Download, Upload } from 'lucide-react';
+import {
+    Search,
+    Plus,
+    Check,
+    X,
+    Edit2,
+    Trash2,
+    User,
+    LogIn,
+    Clock,
+    RefreshCw,
+    Hand,
+    Users,
+    History,
+    Home,
+    FolderOpen,
+    QrCode,
+    Share2,
+    Shield,
+    Download,
+    Upload
+} from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
@@ -21,13 +42,14 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
         fetchTasks();
         const interval = setInterval(fetchTasks, 30000); // Auto-refresh co 30s
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [slug]);
 
     const getAuthHeaders = () => {
         const token = localStorage.getItem('token');
         return {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            Authorization: `Bearer ${token}`
         };
     };
 
@@ -38,20 +60,22 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('BĹ‚Ä…d pobierania zadaĹ„');
+                throw new Error('Błąd pobierania zadań');
             }
 
             const data = await response.json();
-            setTasks(data.map(task => ({
-                ...task,
-                created_at: new Date(task.created_at),
-                taken_at: task.taken_at ? new Date(task.taken_at) : null,
-                completed_at: task.completed_at ? new Date(task.completed_at) : null,
-                edited_at: task.edited_at ? new Date(task.edited_at) : null
-            })));
+            setTasks(
+                data.map((task) => ({
+                    ...task,
+                    created_at: new Date(task.created_at),
+                    taken_at: task.taken_at ? new Date(task.taken_at) : null,
+                    completed_at: task.completed_at ? new Date(task.completed_at) : null,
+                    edited_at: task.edited_at ? new Date(task.edited_at) : null
+                }))
+            );
             setLastSync(new Date());
         } catch (error) {
-            console.error('BĹ‚Ä…d podczas pobierania zadaĹ„:', error);
+            console.error('Błąd podczas pobierania zadań:', error);
         } finally {
             setLoading(false);
         }
@@ -68,14 +92,14 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('BĹ‚Ä…d dodawania zadania');
+                throw new Error('Błąd dodawania zadania');
             }
 
             setNewTaskText('');
             await fetchTasks();
         } catch (error) {
-            console.error('BĹ‚Ä…d podczas dodawania zadania:', error);
-            alert('Nie udaĹ‚o siÄ™ dodaÄ‡ zadania');
+            console.error('Błąd podczas dodawania zadania:', error);
+            alert('Nie udało się dodać zadania');
         }
     };
 
@@ -87,13 +111,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('BĹ‚Ä…d przy braniu zadania');
+                throw new Error('Błąd przy braniu zadania');
             }
 
             await fetchTasks();
         } catch (error) {
-            console.error('BĹ‚Ä…d podczas brania zadania:', error);
-            alert('Nie udaĹ‚o siÄ™ wziÄ…Ä‡ zadania');
+            console.error('Błąd podczas brania zadania:', error);
+            alert('Nie udało się wziąć zadania');
         }
     };
 
@@ -105,13 +129,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('BĹ‚Ä…d przy koĹ„czeniu zadania');
+                throw new Error('Błąd przy kończeniu zadania');
             }
 
             await fetchTasks();
         } catch (error) {
-            console.error('BĹ‚Ä…d podczas koĹ„czenia zadania:', error);
-            alert('Nie udaĹ‚o siÄ™ ukoĹ„czyÄ‡ zadania');
+            console.error('Błąd podczas kończenia zadania:', error);
+            alert('Nie udało się ukończyć zadania');
         }
     };
 
@@ -123,13 +147,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('BĹ‚Ä…d przy oddawaniu zadania');
+                throw new Error('Błąd przy oddawaniu zadania');
             }
 
             await fetchTasks();
         } catch (error) {
-            console.error('BĹ‚Ä…d podczas oddawania zadania:', error);
-            alert('Nie udaĹ‚o siÄ™ oddaÄ‡ zadania');
+            console.error('Błąd podczas oddawania zadania:', error);
+            alert('Nie udało się oddać zadania');
         }
     };
 
@@ -149,15 +173,15 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('BĹ‚Ä…d podczas edycji zadania');
+                throw new Error('Błąd podczas edycji zadania');
             }
 
             setEditingTask(null);
             setEditText('');
             await fetchTasks();
         } catch (error) {
-            console.error('BĹ‚Ä…d podczas edycji zadania:', error);
-            alert('Nie udaĹ‚o siÄ™ edytowaÄ‡ zadania');
+            console.error('Błąd podczas edycji zadania:', error);
+            alert('Nie udało się edytować zadania');
         }
     };
 
@@ -167,7 +191,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
     };
 
     const deleteTask = async (taskId) => {
-        if (!window.confirm('Czy na pewno chcesz usunÄ…Ä‡ to zadanie?')) return;
+        if (!window.confirm('Czy na pewno chcesz usunąć to zadanie?')) return;
 
         try {
             const response = await fetch(`${API_URL}/${slug}/tasks/${taskId}`, {
@@ -176,65 +200,58 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('BĹ‚Ä…d podczas usuwania zadania');
+                throw new Error('Błąd podczas usuwania zadania');
             }
 
             await fetchTasks();
         } catch (error) {
-            console.error('BĹ‚Ä…d podczas usuwania zadania:', error);
-            alert('Nie udaĹ‚o siÄ™ usunÄ…Ä‡ zadania');
+            console.error('Błąd podczas usuwania zadania:', error);
+            alert('Nie udało się usunąć zadania');
         }
     };
 
     const exportTasks = () => {
-        let content = 'TASKLISTER - EKSPORT ZADAĹ\n';
+        let content = 'TASKLISTER - EKSPORT ZADAŃ\n';
         content += `Data eksportu: ${new Date().toLocaleString()}\n`;
-        content += `UĹĽytkownik: ${currentUser?.username}\n`;
+        content += `Użytkownik: ${currentUser?.username}\n`;
         content += `Instancja: ${slug}\n`;
         content += '\n' + '='.repeat(50) + '\n\n';
 
-        // Zadania dostÄ™pne
-        const availableTasks = tasks.filter(t => t.status === 'available');
+        const availableTasks = tasks.filter((t) => t.status === 'available');
         if (availableTasks.length > 0) {
-            content += 'ZADANIA DOSTÄPNE:\n\n';
+            content += 'ZADANIA DOSTĘPNE:\n\n';
             availableTasks.forEach((task, index) => {
                 content += `${index + 1}. ${task.text}\n`;
-                content += `   UtworzyĹ‚: ${task.created_by_name} | Data: ${task.created_at.toLocaleDateString()}\n`;
-                content += '\n';
+                content += `   Utworzył: ${task.created_by_name} | Data: ${task.created_at.toLocaleDateString()}\n\n`;
             });
             content += '\n';
         }
 
-        // Zadania w trakcie
-        const takenTasks = tasks.filter(t => t.status === 'taken');
+        const takenTasks = tasks.filter((t) => t.status === 'taken');
         if (takenTasks.length > 0) {
             content += 'ZADANIA W TRAKCIE REALIZACJI:\n\n';
             takenTasks.forEach((task, index) => {
                 content += `${index + 1}. ${task.text}\n`;
-                content += `   Przypisane: ${task.owner_name} | WziÄ™te: ${task.taken_at?.toLocaleDateString()}\n`;
-                content += `   UtworzyĹ‚: ${task.created_by_name} | Data: ${task.created_at.toLocaleDateString()}\n`;
-                content += '\n';
+                content += `   Przypisane: ${task.owner_name} | Wzięte: ${task.taken_at?.toLocaleDateString()}\n`;
+                content += `   Utworzył: ${task.created_by_name} | Data: ${task.created_at.toLocaleDateString()}\n\n`;
             });
             content += '\n';
         }
 
-        // Zadania ukoĹ„czone
-        const completedTasks = tasks.filter(t => t.status === 'completed');
+        const completedTasks = tasks.filter((t) => t.status === 'completed');
         if (completedTasks.length > 0) {
-            content += 'ZADANIA UKOĹCZONE:\n\n';
+            content += 'ZADANIA UKOŃCZONE:\n\n';
             completedTasks.forEach((task, index) => {
                 content += `${index + 1}. ${task.text}\n`;
-                content += `   UkoĹ„czone przez: ${task.owner_name} | Data: ${task.completed_at?.toLocaleDateString()}\n`;
-                content += `   UtworzyĹ‚: ${task.created_by_name} | Data utworzenia: ${task.created_at.toLocaleDateString()}\n`;
-                content += '\n';
+                content += `   Ukończone przez: ${task.owner_name} | Data: ${task.completed_at?.toLocaleDateString()}\n`;
+                content += `   Utworzył: ${task.created_by_name} | Data utworzenia: ${task.created_at.toLocaleDateString()}\n\n`;
             });
         }
 
         content += '\n' + '='.repeat(50) + '\n';
-        content += `\nĹÄ…czna liczba zadaĹ„: ${tasks.length}\n`;
-        content += `DostÄ™pne: ${availableTasks.length} | W trakcie: ${takenTasks.length} | UkoĹ„czone: ${completedTasks.length}`;
+        content += `\nŁączna liczba zadań: ${tasks.length}\n`;
+        content += `Dostępne: ${availableTasks.length} | W trakcie: ${takenTasks.length} | Ukończone: ${completedTasks.length}`;
 
-        // Tworzenie i pobieranie pliku
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -260,13 +277,12 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             while (i < lines.length) {
                 const line = lines[i].trim();
 
-                // Szukamy linii zaczynajÄ…cych siÄ™ od numeru i kropki (np. "1. Zadanie")
+                // Szukamy linii zaczynających się od numeru i kropki (np. "1. Zadanie")
                 if (line.match(/^\d+\./)) {
-                    // WyciÄ…gamy tekst zadania (wszystko po numerze i kropce)
+                    // Wyciągamy tekst zadania (wszystko po numerze i kropce)
                     const taskText = line.replace(/^\d+\.\s*/, '').trim();
 
                     if (taskText) {
-                        // Sprawdzamy nastÄ™pne linie w poszukiwaniu informacji o zadaniu
                         let taskInfo = {
                             text: taskText,
                             status: 'available',
@@ -274,12 +290,11 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                             created_by_name: currentUser.username
                         };
 
-                        // Sprawdzamy kolejne linie w poszukiwaniu metadanych
+                        // Szukamy metadanych w kolejnych liniach
                         let j = i + 1;
                         while (j < lines.length && lines[j].trim() && !lines[j].trim().match(/^\d+\./)) {
                             const infoLine = lines[j].trim();
 
-                            // Parsowanie informacji o przypisaniu
                             if (infoLine.includes('Przypisane:')) {
                                 const ownerMatch = infoLine.match(/Przypisane:\s*([^|]+)/);
                                 if (ownerMatch) {
@@ -288,18 +303,16 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 }
                             }
 
-                            // Parsowanie informacji o ukoĹ„czeniu
-                            if (infoLine.includes('UkoĹ„czone przez:')) {
-                                const completeMatch = infoLine.match(/UkoĹ„czone przez:\s*([^|]+)/);
+                            if (infoLine.includes('Ukończone przez:')) {
+                                const completeMatch = infoLine.match(/Ukończone przez:\s*([^|]+)/);
                                 if (completeMatch) {
                                     taskInfo.owner_name = completeMatch[1].trim();
                                     taskInfo.status = 'completed';
                                 }
                             }
 
-                            // Parsowanie informacji o twĂłrcy
-                            if (infoLine.includes('UtworzyĹ‚:')) {
-                                const creatorMatch = infoLine.match(/UtworzyĹ‚:\s*([^|]+)/);
+                            if (infoLine.includes('Utworzył:')) {
+                                const creatorMatch = infoLine.match(/Utworzył:\s*([^|]+)/);
                                 if (creatorMatch) {
                                     taskInfo.created_by_name = creatorMatch[1].trim();
                                 }
@@ -308,7 +321,6 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                             j++;
                         }
 
-                        // Dodajemy zadanie przez API
                         try {
                             const response = await fetch(`${API_URL}/${slug}/tasks`, {
                                 method: 'POST',
@@ -320,7 +332,6 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 const newTask = await response.json();
                                 importedTasks.push(newTask);
 
-                                // JeĹ›li zadanie ma byÄ‡ przypisane lub ukoĹ„czone, wykonujemy odpowiednie akcje
                                 if (taskInfo.status === 'taken' && taskInfo.owner_name === currentUser.username) {
                                     await fetch(`${API_URL}/${slug}/tasks/${newTask.id}/take`, {
                                         method: 'PATCH',
@@ -338,7 +349,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 }
                             }
                         } catch (error) {
-                            console.error('BĹ‚Ä…d podczas importowania zadania:', error);
+                            console.error('Błąd podczas importowania zadania:', error);
                         }
                     }
                 }
@@ -348,38 +359,46 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
 
             if (importedTasks.length > 0) {
                 await fetchTasks();
-                alert(`Zaimportowano ${importedTasks.length} zadaĹ„!`);
+                alert(`Zaimportowano ${importedTasks.length} zadań!`);
             } else {
-                alert('Nie znaleziono zadaĹ„ do zaimportowania. Upewnij siÄ™, ĹĽe plik zawiera zadania w formacie:\n\n1. TreĹ›Ä‡ zadania\n2. Kolejne zadanie\n\nlub uĹĽyj pliku wyeksportowanego z aplikacji.');
+                alert(
+                    'Nie znaleziono zadań do zaimportowania. Upewnij się, że plik zawiera zadania w formacie:\n\n1. Treść zadania\n2. Kolejne zadanie\n\nlub użyj pliku wyeksportowanego z aplikacji.'
+                );
             }
         };
 
         reader.onerror = () => {
-            alert('BĹ‚Ä…d podczas wczytywania pliku!');
+            alert('Błąd podczas wczytywania pliku!');
         };
 
         reader.readAsText(file, 'UTF-8');
-        event.target.value = ''; // Reset input
+        event.target.value = '';
     };
 
     const getFilteredTasks = () => {
         let filtered = tasks;
 
         if (activeView === 'my') {
-            filtered = filtered.filter(task =>
-                task.owner_name === currentUser?.username && task.status === 'taken'
+            filtered = filtered.filter(
+                (task) => task.owner_name === currentUser?.username && task.status === 'taken'
             );
         } else if (activeView === 'history') {
-            filtered = filtered.filter(task => task.status === 'taken' || task.status === 'completed');
+            filtered = filtered.filter(
+                (task) => task.status === 'taken' || task.status === 'completed'
+            );
         } else {
-            filtered = filtered.filter(task => task.status === 'available' || task.status === 'taken');
+            filtered = filtered.filter(
+                (task) => task.status === 'available' || task.status === 'taken'
+            );
         }
 
         if (searchTerm) {
-            filtered = filtered.filter(task =>
-                task.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                task.created_by_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (task.owner_name && task.owner_name.toLowerCase().includes(searchTerm.toLowerCase()))
+            filtered = filtered.filter(
+                (task) =>
+                    task.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    task.created_by_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (task.owner_name &&
+                        task.owner_name.toLowerCase().includes(searchTerm.toLowerCase()))
             );
         }
 
@@ -392,15 +411,15 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Ĺadowanie zadaĹ„...</p>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4" />
+                    <p className="text-gray-600">Ładowanie zadań...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 pb-20">
             {/* Header */}
             <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -410,7 +429,9 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 <Users className="w-6 h-6" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-800">{instanceData?.company_name || 'Tasklister'}</h1>
+                                <h1 className="text-2xl font-bold text-gray-800">
+                                    {instanceData?.company_name || 'Tasklister'}
+                                </h1>
                                 <p className="text-sm text-gray-500">/{slug}</p>
                             </div>
                         </div>
@@ -418,20 +439,26 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                                 <RefreshCw className="w-4 h-4" />
-                                <span className="hidden sm:inline">Synchronizacja: {lastSync.toLocaleTimeString()}</span>
+                                <span className="hidden sm:inline">
+                  Synchronizacja: {lastSync.toLocaleTimeString()}
+                </span>
                             </div>
                             <button
                                 onClick={() => setShowQRModal(true)}
                                 className="flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-lg hover:bg-teal-200 transition-colors"
                             >
                                 <QrCode className="w-5 h-5" />
-                                <span className="hidden sm:inline">UdostÄ™pnij</span>
+                                <span className="hidden sm:inline">Udostępnij</span>
                             </button>
                             <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
                                 <User className="w-5 h-5 text-gray-600" />
-                                <span className="font-medium text-gray-800">{currentUser?.username}</span>
+                                <span className="font-medium text-gray-800">
+                  {currentUser?.username}
+                </span>
                                 {currentUser?.role === 'admin' && (
-                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">Admin</span>
+                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded">
+                    Admin
+                  </span>
                                 )}
                             </div>
                             {currentUser?.role !== 'admin' && (
@@ -466,7 +493,9 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 <button
                                     onClick={() => setActiveView('all')}
                                     className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                                        activeView === 'all' ? 'bg-teal-100 text-teal-700' : 'hover:bg-gray-100'
+                                        activeView === 'all'
+                                            ? 'bg-teal-100 text-teal-700'
+                                            : 'hover:bg-gray-100'
                                     }`}
                                 >
                                     <Home className="w-4 h-4" />
@@ -475,7 +504,9 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 <button
                                     onClick={() => setActiveView('my')}
                                     className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                                        activeView === 'my' ? 'bg-teal-100 text-teal-700' : 'hover:bg-gray-100'
+                                        activeView === 'my'
+                                            ? 'bg-teal-100 text-teal-700'
+                                            : 'hover:bg-gray-100'
                                     }`}
                                 >
                                     <FolderOpen className="w-4 h-4" />
@@ -484,7 +515,9 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 <button
                                     onClick={() => setActiveView('history')}
                                     className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center gap-2 ${
-                                        activeView === 'history' ? 'bg-teal-100 text-teal-700' : 'hover:bg-gray-100'
+                                        activeView === 'history'
+                                            ? 'bg-teal-100 text-teal-700'
+                                            : 'hover:bg-gray-100'
                                     }`}
                                 >
                                     <History className="w-4 h-4" />
@@ -525,29 +558,35 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                             <h3 className="font-semibold text-gray-700 mb-3">Statystyki</h3>
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">DostÄ™pne</span>
+                                    <span className="text-sm text-gray-600">Dostępne</span>
                                     <span className="font-semibold text-green-600">
-                                        {tasks.filter(t => t.status === 'available').length}
-                                    </span>
+                    {tasks.filter((t) => t.status === 'available').length}
+                  </span>
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <span className="text-sm text-gray-600">W trakcie</span>
                                     <span className="font-semibold text-orange-600">
-                                        {tasks.filter(t => t.status === 'taken').length}
-                                    </span>
+                    {tasks.filter((t) => t.status === 'taken').length}
+                  </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">UkoĹ„czone</span>
+                                    <span className="text-sm text-gray-600">Ukończone</span>
                                     <span className="font-semibold text-gray-600">
-                                        {tasks.filter(t => t.status === 'completed').length}
-                                    </span>
+                    {tasks.filter((t) => t.status === 'completed').length}
+                  </span>
                                 </div>
                                 <div className="pt-3 border-t border-gray-200">
                                     <div className="flex justify-between items-center">
                                         <span className="text-sm text-gray-600">Moje aktywne</span>
                                         <span className="font-semibold text-teal-600">
-                                            {tasks.filter(t => t.owner_name === currentUser.username && t.status === 'taken').length}
-                                        </span>
+                      {
+                          tasks.filter(
+                              (t) =>
+                                  t.owner_name === currentUser.username &&
+                                  t.status === 'taken'
+                          ).length
+                      }
+                    </span>
                                     </div>
                                 </div>
                             </div>
@@ -582,7 +621,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                         type="text"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        placeholder="Szukaj zadaĹ„..."
+                                        placeholder="Szukaj zadań..."
                                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                     />
                                 </div>
@@ -593,21 +632,26 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                             <h2 className="text-xl font-semibold text-gray-800">
                                 {activeView === 'all' && 'Wszystkie zadania'}
                                 {activeView === 'my' && 'Moje zadania'}
-                                {activeView === 'history' && 'Historia zadaĹ„'}
+                                {activeView === 'history' && 'Historia zadań'}
                             </h2>
                             <span className="text-sm text-gray-500">
-                                Znaleziono: {filteredTasks.length} zadaĹ„
-                            </span>
+                Znaleziono: {filteredTasks.length} zadań
+              </span>
                         </div>
 
                         <div className="space-y-3">
                             {filteredTasks.length === 0 ? (
                                 <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                                    <p className="text-gray-500">Brak zadaĹ„ do wyĹ›wietlenia</p>
+                                    <p className="text-gray-500">
+                                        Brak zadań do wyświetlenia
+                                    </p>
                                 </div>
                             ) : (
-                                filteredTasks.map(task => (
-                                    <div key={task.id} className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow">
+                                filteredTasks.map((task) => (
+                                    <div
+                                        key={task.id}
+                                        className="bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow"
+                                    >
                                         {editingTask === task.id ? (
                                             <div className="flex gap-2">
                                                 <input
@@ -633,35 +677,43 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                         ) : (
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
-                                                    <p className={`text-gray-800 font-medium ${task.status === 'completed' ? 'line-through text-gray-500' : ''}`}>
+                                                    <p
+                                                        className={`text-gray-800 font-medium ${
+                                                            task.status === 'completed'
+                                                                ? 'line-through text-gray-500'
+                                                                : ''
+                                                        }`}
+                                                    >
                                                         {task.text}
                                                     </p>
                                                     <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <User className="w-3 h-3" />
+                              Utworzył: {task.created_by_name}
+                            </span>
                                                         <span className="flex items-center gap-1">
-                                                            <User className="w-3 h-3" />
-                                                            UtworzyĹ‚: {task.created_by_name}
-                                                        </span>
-                                                        <span className="flex items-center gap-1">
-                                                            <Clock className="w-3 h-3" />
+                              <Clock className="w-3 h-3" />
                                                             {task.created_at.toLocaleDateString()}
-                                                        </span>
+                            </span>
                                                         {task.owner_name && (
                                                             <span className="flex items-center gap-1 text-orange-600">
-                                                                <User className="w-3 h-3" />
-                                                                Przypisane: {task.owner_name}
-                                                            </span>
+                                <User className="w-3 h-3" />
+                                Przypisane: {task.owner_name}
+                              </span>
                                                         )}
                                                         {task.taken_at && (
                                                             <span className="flex items-center gap-1 text-orange-600">
-                                                                <Clock className="w-3 h-3" />
-                                                                WziÄ™te: {task.taken_at.toLocaleDateString()}
-                                                            </span>
+                                <Clock className="w-3 h-3" />
+                                Wzięte:{' '}
+                                                                {task.taken_at.toLocaleDateString()}
+                              </span>
                                                         )}
                                                         {task.status === 'completed' && (
                                                             <span className="flex items-center gap-1 text-green-600">
-                                                                <Check className="w-3 h-3" />
-                                                                UkoĹ„czone: {task.completed_at?.toLocaleDateString()}
-                                                            </span>
+                                <Check className="w-3 h-3" />
+                                Ukończone:{' '}
+                                                                {task.completed_at?.toLocaleDateString()}
+                              </span>
                                                         )}
                                                     </div>
                                                 </div>
@@ -673,37 +725,40 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                                             className="bg-orange-600 text-white px-3 py-1 rounded-lg hover:bg-orange-700 transition-colors text-sm flex items-center gap-1"
                                                         >
                                                             <Hand className="w-4 h-4" />
-                                                            WeĹş
+                                                            Weź
                                                         </button>
                                                     )}
 
-                                                    {task.status === 'taken' && task.owner_name === currentUser?.username && (
-                                                        <>
-                                                            <button
-                                                                onClick={() => completeTask(task.id)}
-                                                                className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center gap-1"
-                                                            >
-                                                                <Check className="w-4 h-4" />
-                                                                UkoĹ„cz
-                                                            </button>
-                                                            <button
-                                                                onClick={() => returnTask(task.id)}
-                                                                className="bg-gray-600 text-white px-3 py-1 rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center gap-1"
-                                                            >
-                                                                <RefreshCw className="w-4 h-4" />
-                                                                Oddaj
-                                                            </button>
-                                                        </>
-                                                    )}
+                                                    {task.status === 'taken' &&
+                                                        task.owner_name === currentUser?.username && (
+                                                            <>
+                                                                <button
+                                                                    onClick={() => completeTask(task.id)}
+                                                                    className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center gap-1"
+                                                                >
+                                                                    <Check className="w-4 h-4" />
+                                                                    Ukończ
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => returnTask(task.id)}
+                                                                    className="bg-gray-600 text-white px-3 py-1 rounded-lg hover:bg-gray-700 transition-colors text-sm flex items-center gap-1"
+                                                                >
+                                                                    <RefreshCw className="w-4 h-4" />
+                                                                    Oddaj
+                                                                </button>
+                                                            </>
+                                                        )}
 
-                                                    {(task.created_by_name === currentUser?.username || currentUser?.role === 'admin') && task.status !== 'completed' && (
-                                                        <button
-                                                            onClick={() => startEdit(task)}
-                                                            className="text-gray-600 hover:text-gray-800 transition-colors"
-                                                        >
-                                                            <Edit2 className="w-4 h-4" />
-                                                        </button>
-                                                    )}
+                                                    {(task.created_by_name === currentUser?.username ||
+                                                            currentUser?.role === 'admin') &&
+                                                        task.status !== 'completed' && (
+                                                            <button
+                                                                onClick={() => startEdit(task)}
+                                                                className="text-gray-600 hover:text-gray-800 transition-colors"
+                                                            >
+                                                                <Edit2 className="w-4 h-4" />
+                                                            </button>
+                                                        )}
 
                                                     {currentUser?.role === 'admin' && (
                                                         <button
@@ -731,7 +786,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                 <Share2 className="w-6 h-6 text-teal-600" />
-                                UdostÄ™pnij Tasklister
+                                Udostępnij Tasklister
                             </h3>
                             <button
                                 onClick={() => setShowQRModal(false)}
@@ -743,7 +798,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
 
                         <div className="text-center">
                             <p className="text-gray-600 mb-6">
-                                Zeskanuj kod QR, aby udostÄ™pniÄ‡ tÄ™ instancjÄ™
+                                Zeskanuj kod QR, aby udostępnić tę instancję
                             </p>
 
                             <div className="bg-gray-50 p-6 rounded-lg inline-block">
@@ -764,13 +819,11 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                     onClick={async () => {
                                         const url = window.location.href;
                                         try {
-                                            // PrĂłbuj uĹĽyÄ‡ nowoczesnego Clipboard API
                                             if (navigator.clipboard && navigator.clipboard.writeText) {
                                                 await navigator.clipboard.writeText(url);
                                                 setCopySuccess(true);
                                                 setTimeout(() => setCopySuccess(false), 2000);
                                             } else {
-                                                // Fallback dla starszych przeglÄ…darek
                                                 const textArea = document.createElement('textarea');
                                                 textArea.value = url;
                                                 textArea.style.position = 'fixed';
@@ -780,21 +833,32 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                                 textArea.focus();
                                                 textArea.select();
                                                 try {
-                                                    const successful = document.execCommand('copy');
+                                                    const successful =
+                                                        document.execCommand('copy');
                                                     if (successful) {
                                                         setCopySuccess(true);
-                                                        setTimeout(() => setCopySuccess(false), 2000);
+                                                        setTimeout(
+                                                            () => setCopySuccess(false),
+                                                            2000
+                                                        );
                                                     } else {
-                                                        throw new Error('Nie udaĹ‚o siÄ™ skopiowaÄ‡');
+                                                        throw new Error(
+                                                            'Nie udało się skopiować'
+                                                        );
                                                     }
                                                 } catch (err) {
-                                                    throw new Error('Nie udaĹ‚o siÄ™ skopiowaÄ‡ linku');
+                                                    throw new Error(
+                                                        'Nie udało się skopiować linku'
+                                                    );
                                                 } finally {
                                                     document.body.removeChild(textArea);
                                                 }
                                             }
                                         } catch (err) {
-                                            alert('Nie udaĹ‚o siÄ™ skopiowaÄ‡ linku. Skopiuj go rÄ™cznie: ' + url);
+                                            alert(
+                                                'Nie udało się skopiować linku. Skopiuj go ręcznie: ' +
+                                                url
+                                            );
                                         }
                                     }}
                                     className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
@@ -803,7 +867,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                     }`}
                                 >
-                                    {copySuccess ? 'âś“ Skopiowano!' : 'Kopiuj link'}
+                                    {copySuccess ? '✓ Skopiowano!' : 'Kopiuj link'}
                                 </button>
                                 <button
                                     onClick={() => {

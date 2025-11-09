@@ -25,7 +25,7 @@ const HomePage = () => {
         setLoading(true);
 
         if (!formData.companyName.trim() || !formData.adminUsername.trim() || !formData.adminPassword.trim()) {
-            setError('Wszystkie pola sÄ… wymagane');
+            setError('Wszystkie pola są wymagane');
             setLoading(false);
             return;
         }
@@ -42,7 +42,7 @@ const HomePage = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'BĹ‚Ä…d podczas rejestracji');
+                throw new Error(data.error || 'Błąd podczas rejestracji');
             }
 
             localStorage.setItem('token', data.token);
@@ -51,7 +51,7 @@ const HomePage = () => {
 
             navigate(`/${data.slug}`);
         } catch (err) {
-            setError(err.message || 'Nie udaĹ‚o siÄ™ utworzyÄ‡ przestrzeni');
+            setError(err.message || 'Nie udało się utworzyć przestrzeni');
         } finally {
             setLoading(false);
         }
@@ -83,7 +83,7 @@ const HomePage = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'BĹ‚Ä…d podczas logowania');
+                throw new Error(data.error || 'Błąd podczas logowania');
             }
 
             localStorage.setItem('token', data.token);
@@ -92,7 +92,7 @@ const HomePage = () => {
 
             navigate(`/${slug.trim()}`);
         } catch (err) {
-            setAdminLoginError(err.message || 'Nie udaĹ‚o siÄ™ zalogowaÄ‡');
+            setAdminLoginError(err.message || 'Nie udało się zalogować');
             throw err;
         }
     };
@@ -115,7 +115,7 @@ const HomePage = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'BĹ‚Ä…d podczas logowania');
+                throw new Error(data.error || 'Błąd podczas logowania');
             }
 
             localStorage.setItem('token', data.token);
@@ -124,13 +124,13 @@ const HomePage = () => {
 
             navigate(`/${slug.trim()}`);
         } catch (err) {
-            setUserLoginError(err.message || 'Nie udaĹ‚o siÄ™ zalogowaÄ‡');
+            setUserLoginError(err.message || 'Nie udało się zalogować');
             throw err;
         }
     };
 
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center p-4 pb-24 md:pb-4 relative overflow-hidden">
+        <div className="min-h-screen bg-white flex items-center justify-center p-4 pb-20 md:pb-20 relative overflow-hidden">
             {/* Grid pattern overlay */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
@@ -144,7 +144,7 @@ const HomePage = () => {
                             <Sparkles className="w-8 h-8 text-white" />
                         </div>
                         <h1 className="text-4xl font-bold text-gray-800 mb-2">Tasklister</h1>
-                        <p className="text-gray-600">Prosty menedĹĽer zadaĹ„ dla Ciebie i Twojego zespoĹ‚u</p>
+                        <p className="text-gray-600">Prosty menedżer zadań dla Ciebie i Twojego zespołu</p>
                     </div>
                 </div>
 
@@ -168,19 +168,19 @@ const HomePage = () => {
                                 name="companyName"
                                 value={formData.companyName}
                                 onChange={handleChange}
-                                placeholder="np. MĂłj Projekt, ZespĂłĹ‚ Alpha, Dom"
+                                placeholder="np. Mój Projekt, Zespół Alpha, Dom"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                 required
                             />
                             <p className="mt-1 text-xs text-gray-500">
-                                PrzestrzeĹ„ bÄ™dzie dostÄ™pna pod adresem: tasklister.pl/[nazwa]
+                                Przestrzeń będzie dostępna pod adresem: tasklister.pl/[nazwa]
                             </p>
                         </div>
 
                         <div>
                             <label htmlFor="adminUsername" className="block text-sm font-medium text-gray-700 mb-2">
                                 <User className="w-4 h-4 inline mr-2" />
-                                TwĂłj login
+                                Twój login
                             </label>
                             <input
                                 type="text"
@@ -197,7 +197,7 @@ const HomePage = () => {
                         <div>
                             <label htmlFor="adminPassword" className="block text-sm font-medium text-gray-700 mb-2">
                                 <Lock className="w-4 h-4 inline mr-2" />
-                                HasĹ‚o
+                                Hasło
                             </label>
                             <input
                                 type="password"
@@ -205,7 +205,7 @@ const HomePage = () => {
                                 name="adminPassword"
                                 value={formData.adminPassword}
                                 onChange={handleChange}
-                                placeholder="WprowadĹş bezpieczne hasĹ‚o"
+                                placeholder="Wprowadź bezpieczne hasło"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                 required
                                 minLength={6}
@@ -224,7 +224,7 @@ const HomePage = () => {
                                 </>
                             ) : (
                                 <>
-                                    UtwĂłrz przestrzeĹ„
+                                    Utwórz przestrzeń
                                     <ArrowRight className="w-5 h-5" />
                                 </>
                             )}
@@ -234,7 +234,7 @@ const HomePage = () => {
                     <div className="mt-6 pt-6 border-t border-gray-200">
                         <p className="text-xs text-gray-500 text-center mb-4">
                             Po utworzeniu przestrzeni zostaniesz automatycznie zalogowany jako administrator.
-                            BÄ™dziesz mĂłgĹ‚ zarzÄ…dzaÄ‡ wszystkimi zadaniami i zapraszaÄ‡ inne osoby.
+                            Będziesz mógł zarządzać wszystkimi zadaniami i zapraszać inne osoby.
                         </p>
                         <div className="text-center space-y-2">
                             <button
@@ -249,7 +249,7 @@ const HomePage = () => {
                                 className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-800 transition-colors text-sm mx-auto"
                             >
                                 <User className="w-4 h-4" />
-                                Zaloguj siÄ™ jako uĹĽytkownik
+                                Zaloguj się jako użytkownik
                             </button>
                         </div>
                     </div>
@@ -258,7 +258,10 @@ const HomePage = () => {
                 {/* Footer Container */}
                 <div className="mt-6 mb-8 md:mb-0 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6">
                     <p className="text-center text-sm text-gray-500">
-                        Lub przejdĹş bezpoĹ›rednio do: <a href="/" className="text-teal-600 hover:text-teal-700 font-medium">tasklister.pl/[nazwa]</a>
+                        Lub przejdź bezpośrednio do:{' '}
+                        <a href="/" className="text-teal-600 hover:text-teal-700 font-medium">
+                            tasklister.pl/[nazwa]
+                        </a>
                     </p>
                 </div>
             </div>
@@ -283,26 +286,29 @@ const HomePage = () => {
                             </button>
                         </div>
 
-                        <form onSubmit={async (e) => {
-                            e.preventDefault();
-                            setAdminLoginError('');
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                setAdminLoginError('');
 
-                            const formData = new FormData(e.target);
-                            const slug = formData.get('slug')?.trim() || '';
-                            const username = formData.get('username')?.trim() || '';
-                            const password = formData.get('password') || '';
+                                const form = new FormData(e.target);
+                                const slug = (form.get('slug') || '').toString().trim();
+                                const username = (form.get('username') || '').toString().trim();
+                                const password = (form.get('password') || '').toString();
 
-                            if (!slug || !username || !password) {
-                                setAdminLoginError('Wszystkie pola sÄ… wymagane');
-                                return;
-                            }
+                                if (!slug || !username || !password) {
+                                    setAdminLoginError('Wszystkie pola są wymagane');
+                                    return;
+                                }
 
-                            try {
-                                await handleAdminLogin(slug, username, password);
-                            } catch (err) {
-                                // BĹ‚Ä…d juĹĽ jest ustawiony
-                            }
-                        }} className="space-y-4">
+                                try {
+                                    await handleAdminLogin(slug, username, password);
+                                } catch {
+                                    // błąd jest ustawiony wyżej
+                                }
+                            }}
+                            className="space-y-4"
+                        >
                             {adminLoginError && (
                                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                                     {adminLoginError}
@@ -343,13 +349,13 @@ const HomePage = () => {
                             <div>
                                 <label htmlFor="modal-password" className="block text-sm font-medium text-gray-700 mb-2">
                                     <Lock className="w-4 h-4 inline mr-2" />
-                                    HasĹ‚o
+                                    Hasło
                                 </label>
                                 <input
                                     type="password"
                                     id="modal-password"
                                     name="password"
-                                    placeholder="Wpisz hasĹ‚o"
+                                    placeholder="Wpisz hasło"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     required
                                 />
@@ -370,7 +376,7 @@ const HomePage = () => {
                                     type="submit"
                                     className="flex-1 bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
                                 >
-                                    Zaloguj siÄ™
+                                    Zaloguj się
                                     <ArrowRight className="w-5 h-5" />
                                 </button>
                             </div>
@@ -379,14 +385,14 @@ const HomePage = () => {
                 </div>
             )}
 
-            {/* Modal logowania jako uĹĽytkownik */}
+            {/* Modal logowania jako użytkownik */}
             {showUserLogin && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8 max-w-md w-full">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                 <User className="w-5 h-5 text-teal-600" />
-                                Logowanie uĹĽytkownika
+                                Logowanie użytkownika
                             </h2>
                             <button
                                 onClick={() => {
@@ -399,25 +405,27 @@ const HomePage = () => {
                             </button>
                         </div>
 
-                        <form onSubmit={async (e) => {
-                            e.preventDefault();
-                            setUserLoginError('');
+                        <form
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                setUserLoginError('');
 
-                            const formData = new FormData(e.target);
-                            const slug = formData.get('user-slug')?.trim() || '';
-                            const username = formData.get('user-username')?.trim() || '';
+                                const form = new FormData(e.target);
+                                const slug = (form.get('user-slug') || '').toString().trim();
+                                const username = (form.get('user-username') || '').toString().trim();
 
-                            if (!slug || !username) {
-                                setUserLoginError('Wszystkie pola sÄ… wymagane');
-                                return;
-                            }
+                                if (!slug || !username) {
+                                    setUserLoginError('Wszystkie pola są wymagane');
+                                    return;
+                                }
 
-                            try {
-                                await handleUserLogin(slug, username);
-                            } catch (err) {
-                                // BĹ‚Ä…d juĹĽ jest ustawiony
-                            }
-                        }} className="space-y-4">
+                                try {
+                                    await handleUserLogin(slug, username);
+                                } catch {
+                                }
+                            }}
+                            className="space-y-4"
+                        >
                             {userLoginError && (
                                 <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                                     {userLoginError}
@@ -443,13 +451,13 @@ const HomePage = () => {
                             <div>
                                 <label htmlFor="user-username" className="block text-sm font-medium text-gray-700 mb-2">
                                     <User className="w-4 h-4 inline mr-2" />
-                                    TwĂłj nick
+                                    Twój nick
                                 </label>
                                 <input
                                     type="text"
                                     id="user-username"
                                     name="user-username"
-                                    placeholder="Wpisz swĂłj nick"
+                                    placeholder="Wpisz swój nick"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     required
                                 />
@@ -470,7 +478,7 @@ const HomePage = () => {
                                     type="submit"
                                     className="flex-1 bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
                                 >
-                                    Zaloguj siÄ™
+                                    Zaloguj się
                                     <ArrowRight className="w-5 h-5" />
                                 </button>
                             </div>

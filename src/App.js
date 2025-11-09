@@ -8,13 +8,8 @@ function App() {
         <Router>
             <div>
                 <Routes>
-                    {/* Strona gĹ‚Ăłwna - rejestracja nowej instancji */}
                     <Route path="/" element={<HomePage />} />
-
-                    {/* Instancja aplikacji - /:slug */}
                     <Route path="/:slug" element={<InstanceApp />} />
-
-                    {/* Redirect dla nieznanych Ĺ›cieĹĽek */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </div>
@@ -28,7 +23,7 @@ function App() {
                 }}
             >
                 <span className="opacity-60">&gt;</span>&nbsp;
-                smile, youâ€™re alive â€” <span className="text-green-700 font-semibold">cez</span>&nbsp;
+                smile, you're alive - <span className="text-green-700 font-semibold">cez</span>&nbsp;
                 <span className="opacity-80 animate-blink">_</span>
             </footer>
 
@@ -49,7 +44,6 @@ function App() {
                     animation: blink 1s infinite;
                 }
             `}</style>
-
         </Router>
     );
 }
