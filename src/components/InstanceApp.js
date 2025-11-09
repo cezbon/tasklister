@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import TaskManager from './TaskManager';
 import LoginModal from './LoginModal';
-import { User, Shield } from 'lucide-react';
+import { User, Shield, Home, Sparkles } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
@@ -154,8 +154,21 @@ const InstanceApp = () => {
 
     if (!currentUser) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-50 flex items-center justify-center p-4">
-                <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+            <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-blue-50 flex flex-col items-center justify-center p-4">
+                <div className="max-w-md w-full flex flex-col items-center">
+                    {/* Klikalny element na środku na górze - NAD modalem */}
+                    <button
+                        onClick={() => navigate('/')}
+                        className="mb-8 text-center group cursor-pointer"
+                    >
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-600 rounded-2xl mb-4 shadow-lg group-hover:bg-teal-700 transition-colors">
+                            <Sparkles className="w-8 h-8 text-white" />
+                        </div>
+                        <h1 className="text-4xl font-bold text-gray-800 mb-2 group-hover:text-teal-600 transition-colors">Tasklister</h1>
+                        <p className="text-gray-600">Zaloguj się do swojej firmy</p>
+                    </button>
+
+                    <div className="w-full bg-white rounded-2xl shadow-xl p-8">
                     <div className="text-center mb-6">
                         <h1 className="text-3xl font-bold text-gray-800 mb-2">
                             {instanceData?.company_name || slug}
@@ -220,6 +233,7 @@ const InstanceApp = () => {
                             }}
                         />
                     )}
+                    </div>
                 </div>
             </div>
         );

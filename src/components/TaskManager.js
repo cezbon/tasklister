@@ -14,6 +14,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
     const [lastSync, setLastSync] = useState(new Date());
     const [showQRModal, setShowQRModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [copySuccess, setCopySuccess] = useState(false);
     const fileInputRef = React.useRef(null);
 
     useEffect(() => {
@@ -760,16 +761,55 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
 
                             <div className="mt-6 flex gap-3">
                                 <button
-                                    onClick={() => {
-                                        navigator.clipboard.writeText(window.location.href);
-                                        alert('Link skopiowany do schowka!');
+                                    onClick={async () => {
+                                        const url = window.location.href;
+                                        try {
+                                            // Próbuj użyć nowoczesnego Clipboard API
+                                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                await navigator.clipboard.writeText(url);
+                                                setCopySuccess(true);
+                                                setTimeout(() => setCopySuccess(false), 2000);
+                                            } else {
+                                                // Fallback dla starszych przeglądarek
+                                                const textArea = document.createElement('textarea');
+                                                textArea.value = url;
+                                                textArea.style.position = 'fixed';
+                                                textArea.style.left = '-999999px';
+                                                textArea.style.top = '-999999px';
+                                                document.body.appendChild(textArea);
+                                                textArea.focus();
+                                                textArea.select();
+                                                try {
+                                                    const successful = document.execCommand('copy');
+                                                    if (successful) {
+                                                        setCopySuccess(true);
+                                                        setTimeout(() => setCopySuccess(false), 2000);
+                                                    } else {
+                                                        throw new Error('Nie udało się skopiować');
+                                                    }
+                                                } catch (err) {
+                                                    throw new Error('Nie udało się skopiować linku');
+                                                } finally {
+                                                    document.body.removeChild(textArea);
+                                                }
+                                            }
+                                        } catch (err) {
+                                            alert('Nie udało się skopiować linku. Skopiuj go ręcznie: ' + url);
+                                        }
                                     }}
-                                    className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                                    className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
+                                        copySuccess 
+                                            ? 'bg-green-500 text-white' 
+                                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    }`}
                                 >
-                                    Kopiuj link
+                                    {copySuccess ? '✓ Skopiowano!' : 'Kopiuj link'}
                                 </button>
                                 <button
-                                    onClick={() => setShowQRModal(false)}
+                                    onClick={() => {
+                                        setShowQRModal(false);
+                                        setCopySuccess(false);
+                                    }}
                                     className="flex-1 bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors"
                                 >
                                     Zamknij

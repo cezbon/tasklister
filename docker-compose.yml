@@ -14,6 +14,13 @@ services:
       - ./backend/schema.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - tasklister_net
+    # --- DODANO SEKCJĘ HEALTHCHECK ---
+    # Sprawdza, czy baza Postgres FAKTYCZNIE przyjmuje połączenia
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   backend:
     container_name: tasklister_backend
@@ -25,8 +32,11 @@ services:
       - ./.env
     ports:
       - "127.0.0.1:5000:5000"
+    # --- ZMODYFIKOWANO SEKCJĘ DEPENDS_ON ---
+    # Teraz backend poczeka, aż healthcheck bazy danych się powiedzie
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - tasklister_net
 
