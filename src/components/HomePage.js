@@ -44,15 +44,13 @@ const HomePage = () => {
                 throw new Error(data.error || 'Błąd podczas rejestracji');
             }
 
-            // Zapisz token w localStorage
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
             localStorage.setItem('instanceSlug', data.slug);
 
-            // Przekieruj do instancji
             navigate(`/${data.slug}`);
         } catch (err) {
-            setError(err.message || 'Nie udało się utworzyć instancji');
+            setError(err.message || 'Nie udało się utworzyć przestrzeni');
         } finally {
             setLoading(false);
         }
@@ -74,10 +72,10 @@ const HomePage = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    slug: slug.trim(), 
-                    username, 
-                    password 
+                body: JSON.stringify({
+                    slug: slug.trim(),
+                    username,
+                    password
                 })
             });
 
@@ -107,8 +105,8 @@ const HomePage = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    slug: slug.trim(), 
+                body: JSON.stringify({
+                    slug: slug.trim(),
                     username: username.trim()
                 })
             });
@@ -136,19 +134,21 @@ const HomePage = () => {
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
             </div>
-            
+
             <div className="max-w-md w-full relative z-10">
-                {/* Logo/Header */}
-                <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-600 rounded-2xl mb-4 shadow-lg">
-                        <Sparkles className="w-8 h-8 text-white" />
+                {/* Logo/Header Container */}
+                <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8 mb-6">
+                    <div className="text-center">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-teal-600 rounded-2xl mb-4 shadow-lg">
+                            <Sparkles className="w-8 h-8 text-white" />
+                        </div>
+                        <h1 className="text-4xl font-bold text-gray-800 mb-2">Tasklister</h1>
+                        <p className="text-gray-600">Prosty menedżer zadań dla Ciebie i Twojego zespołu</p>
                     </div>
-                    <h1 className="text-4xl font-bold text-gray-800 mb-2">Tasklister</h1>
-                    <p className="text-gray-600">Utwórz nową instancję dla swojej firmy</p>
                 </div>
 
-                {/* Formularz */}
-                <div className="bg-white rounded-2xl shadow-xl p-8">
+                {/* Main Form Container */}
+                <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {error && (
                             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
@@ -156,11 +156,10 @@ const HomePage = () => {
                             </div>
                         )}
 
-                        {/* Nazwa firmy */}
                         <div>
                             <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-2">
                                 <Building2 className="w-4 h-4 inline mr-2" />
-                                Nazwa firmy
+                                Nazwa przestrzeni
                             </label>
                             <input
                                 type="text"
@@ -168,20 +167,19 @@ const HomePage = () => {
                                 name="companyName"
                                 value={formData.companyName}
                                 onChange={handleChange}
-                                placeholder="np. Moja Firma Sp. z o.o."
+                                placeholder="np. Mój Projekt, Zespół Alpha, Dom"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                 required
                             />
                             <p className="mt-1 text-xs text-gray-500">
-                                Instancja będzie dostępna pod adresem: tasklister.pl/[nazwa-firmy]
+                                Przestrzeń będzie dostępna pod adresem: tasklister.pl/[nazwa]
                             </p>
                         </div>
 
-                        {/* Login admina */}
                         <div>
                             <label htmlFor="adminUsername" className="block text-sm font-medium text-gray-700 mb-2">
                                 <User className="w-4 h-4 inline mr-2" />
-                                Login administratora
+                                Twój login
                             </label>
                             <input
                                 type="text"
@@ -189,17 +187,16 @@ const HomePage = () => {
                                 name="adminUsername"
                                 value={formData.adminUsername}
                                 onChange={handleChange}
-                                placeholder="np. admin"
+                                placeholder="np. jan, admin, moje_imie"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                 required
                             />
                         </div>
 
-                        {/* Hasło admina */}
                         <div>
                             <label htmlFor="adminPassword" className="block text-sm font-medium text-gray-700 mb-2">
                                 <Lock className="w-4 h-4 inline mr-2" />
-                                Hasło administratora
+                                Hasło
                             </label>
                             <input
                                 type="password"
@@ -214,7 +211,6 @@ const HomePage = () => {
                             />
                         </div>
 
-                        {/* Przycisk submit */}
                         <button
                             type="submit"
                             disabled={loading}
@@ -223,22 +219,21 @@ const HomePage = () => {
                             {loading ? (
                                 <>
                                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    Tworzenie instancji...
+                                    Tworzenie przestrzeni...
                                 </>
                             ) : (
                                 <>
-                                    Utwórz instancję
+                                    Utwórz przestrzeń
                                     <ArrowRight className="w-5 h-5" />
                                 </>
                             )}
                         </button>
                     </form>
 
-                    {/* Informacja */}
                     <div className="mt-6 pt-6 border-t border-gray-200">
                         <p className="text-xs text-gray-500 text-center mb-4">
-                            Po utworzeniu instancji zostaniesz automatycznie zalogowany jako administrator.
-                            Będziesz mógł zarządzać wszystkimi zadaniami w swojej firmie.
+                            Po utworzeniu przestrzeni zostaniesz automatycznie zalogowany jako administrator.
+                            Będziesz mógł zarządzać wszystkimi zadaniami i zapraszać inne osoby.
                         </p>
                         <div className="text-center space-y-2">
                             <button
@@ -253,22 +248,24 @@ const HomePage = () => {
                                 className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-800 transition-colors text-sm mx-auto"
                             >
                                 <User className="w-4 h-4" />
-                                Zaloguj się do firmy jako użytkownik
+                                Zaloguj się jako użytkownik
                             </button>
                         </div>
                     </div>
                 </div>
 
-                {/* Footer */}
-                <div className="mt-8 mb-8 md:mb-0 text-center text-sm text-gray-500">
-                    <p>Lub przejdź bezpośrednio do: <a href="/" className="text-teal-600 hover:text-teal-700 font-medium">tasklister.pl/[nazwa-firmy]</a></p>
+                {/* Footer Container */}
+                <div className="mt-6 mb-8 md:mb-0 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6">
+                    <p className="text-center text-sm text-gray-500">
+                        Lub przejdź bezpośrednio do: <a href="/" className="text-teal-600 hover:text-teal-700 font-medium">tasklister.pl/[nazwa]</a>
+                    </p>
                 </div>
             </div>
 
             {/* Modal logowania jako admin */}
             {showAdminLogin && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+                    <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8 max-w-md w-full">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                 <Lock className="w-5 h-5 text-teal-600" />
@@ -302,7 +299,7 @@ const HomePage = () => {
                             try {
                                 await handleAdminLogin(slug, username, password);
                             } catch (err) {
-                                // Błąd już jest ustawiony w handleAdminLogin
+                                // Błąd już jest ustawiony
                             }
                         }} className="space-y-4">
                             {adminLoginError && (
@@ -314,13 +311,13 @@ const HomePage = () => {
                             <div>
                                 <label htmlFor="modal-slug" className="block text-sm font-medium text-gray-700 mb-2">
                                     <Building2 className="w-4 h-4 inline mr-2" />
-                                    Nazwa instancji
+                                    Nazwa przestrzeni
                                 </label>
                                 <input
                                     type="text"
                                     id="modal-slug"
                                     name="slug"
-                                    placeholder="np. moja-firma"
+                                    placeholder="np. moj-projekt"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     required
                                     autoFocus
@@ -384,7 +381,7 @@ const HomePage = () => {
             {/* Modal logowania jako użytkownik */}
             {showUserLogin && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full">
+                    <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8 max-w-md w-full">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                 <User className="w-5 h-5 text-teal-600" />
@@ -417,7 +414,7 @@ const HomePage = () => {
                             try {
                                 await handleUserLogin(slug, username);
                             } catch (err) {
-                                // Błąd już jest ustawiony w handleUserLogin
+                                // Błąd już jest ustawiony
                             }
                         }} className="space-y-4">
                             {userLoginError && (
@@ -429,13 +426,13 @@ const HomePage = () => {
                             <div>
                                 <label htmlFor="user-slug" className="block text-sm font-medium text-gray-700 mb-2">
                                     <Building2 className="w-4 h-4 inline mr-2" />
-                                    Nazwa firmy
+                                    Nazwa przestrzeni
                                 </label>
                                 <input
                                     type="text"
                                     id="user-slug"
                                     name="user-slug"
-                                    placeholder="np. moja-firma"
+                                    placeholder="np. moj-projekt"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     required
                                     autoFocus
@@ -485,5 +482,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
-
