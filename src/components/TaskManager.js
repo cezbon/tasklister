@@ -38,7 +38,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('Błąd pobierania zadań');
+                throw new Error('BĹ‚Ä…d pobierania zadaĹ„');
             }
 
             const data = await response.json();
@@ -51,7 +51,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             })));
             setLastSync(new Date());
         } catch (error) {
-            console.error('Błąd podczas pobierania zadań:', error);
+            console.error('BĹ‚Ä…d podczas pobierania zadaĹ„:', error);
         } finally {
             setLoading(false);
         }
@@ -68,14 +68,14 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('Błąd dodawania zadania');
+                throw new Error('BĹ‚Ä…d dodawania zadania');
             }
 
             setNewTaskText('');
             await fetchTasks();
         } catch (error) {
-            console.error('Błąd podczas dodawania zadania:', error);
-            alert('Nie udało się dodać zadania');
+            console.error('BĹ‚Ä…d podczas dodawania zadania:', error);
+            alert('Nie udaĹ‚o siÄ™ dodaÄ‡ zadania');
         }
     };
 
@@ -87,13 +87,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('Błąd przy braniu zadania');
+                throw new Error('BĹ‚Ä…d przy braniu zadania');
             }
 
             await fetchTasks();
         } catch (error) {
-            console.error('Błąd podczas brania zadania:', error);
-            alert('Nie udało się wziąć zadania');
+            console.error('BĹ‚Ä…d podczas brania zadania:', error);
+            alert('Nie udaĹ‚o siÄ™ wziÄ…Ä‡ zadania');
         }
     };
 
@@ -105,13 +105,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('Błąd przy kończeniu zadania');
+                throw new Error('BĹ‚Ä…d przy koĹ„czeniu zadania');
             }
 
             await fetchTasks();
         } catch (error) {
-            console.error('Błąd podczas kończenia zadania:', error);
-            alert('Nie udało się ukończyć zadania');
+            console.error('BĹ‚Ä…d podczas koĹ„czenia zadania:', error);
+            alert('Nie udaĹ‚o siÄ™ ukoĹ„czyÄ‡ zadania');
         }
     };
 
@@ -123,13 +123,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('Błąd przy oddawaniu zadania');
+                throw new Error('BĹ‚Ä…d przy oddawaniu zadania');
             }
 
             await fetchTasks();
         } catch (error) {
-            console.error('Błąd podczas oddawania zadania:', error);
-            alert('Nie udało się oddać zadania');
+            console.error('BĹ‚Ä…d podczas oddawania zadania:', error);
+            alert('Nie udaĹ‚o siÄ™ oddaÄ‡ zadania');
         }
     };
 
@@ -149,15 +149,15 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('Błąd podczas edycji zadania');
+                throw new Error('BĹ‚Ä…d podczas edycji zadania');
             }
 
             setEditingTask(null);
             setEditText('');
             await fetchTasks();
         } catch (error) {
-            console.error('Błąd podczas edycji zadania:', error);
-            alert('Nie udało się edytować zadania');
+            console.error('BĹ‚Ä…d podczas edycji zadania:', error);
+            alert('Nie udaĹ‚o siÄ™ edytowaÄ‡ zadania');
         }
     };
 
@@ -167,7 +167,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
     };
 
     const deleteTask = async (taskId) => {
-        if (!window.confirm('Czy na pewno chcesz usunąć to zadanie?')) return;
+        if (!window.confirm('Czy na pewno chcesz usunÄ…Ä‡ to zadanie?')) return;
 
         try {
             const response = await fetch(`${API_URL}/${slug}/tasks/${taskId}`, {
@@ -176,30 +176,30 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             });
 
             if (!response.ok) {
-                throw new Error('Błąd podczas usuwania zadania');
+                throw new Error('BĹ‚Ä…d podczas usuwania zadania');
             }
 
             await fetchTasks();
         } catch (error) {
-            console.error('Błąd podczas usuwania zadania:', error);
-            alert('Nie udało się usunąć zadania');
+            console.error('BĹ‚Ä…d podczas usuwania zadania:', error);
+            alert('Nie udaĹ‚o siÄ™ usunÄ…Ä‡ zadania');
         }
     };
 
     const exportTasks = () => {
-        let content = 'TASKLISTER - EKSPORT ZADAŃ\n';
+        let content = 'TASKLISTER - EKSPORT ZADAĹ\n';
         content += `Data eksportu: ${new Date().toLocaleString()}\n`;
-        content += `Użytkownik: ${currentUser?.username}\n`;
+        content += `UĹĽytkownik: ${currentUser?.username}\n`;
         content += `Instancja: ${slug}\n`;
         content += '\n' + '='.repeat(50) + '\n\n';
 
-        // Zadania dostępne
+        // Zadania dostÄ™pne
         const availableTasks = tasks.filter(t => t.status === 'available');
         if (availableTasks.length > 0) {
-            content += 'ZADANIA DOSTĘPNE:\n\n';
+            content += 'ZADANIA DOSTÄPNE:\n\n';
             availableTasks.forEach((task, index) => {
                 content += `${index + 1}. ${task.text}\n`;
-                content += `   Utworzył: ${task.created_by_name} | Data: ${task.created_at.toLocaleDateString()}\n`;
+                content += `   UtworzyĹ‚: ${task.created_by_name} | Data: ${task.created_at.toLocaleDateString()}\n`;
                 content += '\n';
             });
             content += '\n';
@@ -211,28 +211,28 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             content += 'ZADANIA W TRAKCIE REALIZACJI:\n\n';
             takenTasks.forEach((task, index) => {
                 content += `${index + 1}. ${task.text}\n`;
-                content += `   Przypisane: ${task.owner_name} | Wzięte: ${task.taken_at?.toLocaleDateString()}\n`;
-                content += `   Utworzył: ${task.created_by_name} | Data: ${task.created_at.toLocaleDateString()}\n`;
+                content += `   Przypisane: ${task.owner_name} | WziÄ™te: ${task.taken_at?.toLocaleDateString()}\n`;
+                content += `   UtworzyĹ‚: ${task.created_by_name} | Data: ${task.created_at.toLocaleDateString()}\n`;
                 content += '\n';
             });
             content += '\n';
         }
 
-        // Zadania ukończone
+        // Zadania ukoĹ„czone
         const completedTasks = tasks.filter(t => t.status === 'completed');
         if (completedTasks.length > 0) {
-            content += 'ZADANIA UKOŃCZONE:\n\n';
+            content += 'ZADANIA UKOĹCZONE:\n\n';
             completedTasks.forEach((task, index) => {
                 content += `${index + 1}. ${task.text}\n`;
-                content += `   Ukończone przez: ${task.owner_name} | Data: ${task.completed_at?.toLocaleDateString()}\n`;
-                content += `   Utworzył: ${task.created_by_name} | Data utworzenia: ${task.created_at.toLocaleDateString()}\n`;
+                content += `   UkoĹ„czone przez: ${task.owner_name} | Data: ${task.completed_at?.toLocaleDateString()}\n`;
+                content += `   UtworzyĹ‚: ${task.created_by_name} | Data utworzenia: ${task.created_at.toLocaleDateString()}\n`;
                 content += '\n';
             });
         }
 
         content += '\n' + '='.repeat(50) + '\n';
-        content += `\nŁączna liczba zadań: ${tasks.length}\n`;
-        content += `Dostępne: ${availableTasks.length} | W trakcie: ${takenTasks.length} | Ukończone: ${completedTasks.length}`;
+        content += `\nĹÄ…czna liczba zadaĹ„: ${tasks.length}\n`;
+        content += `DostÄ™pne: ${availableTasks.length} | W trakcie: ${takenTasks.length} | UkoĹ„czone: ${completedTasks.length}`;
 
         // Tworzenie i pobieranie pliku
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -260,13 +260,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             while (i < lines.length) {
                 const line = lines[i].trim();
 
-                // Szukamy linii zaczynających się od numeru i kropki (np. "1. Zadanie")
+                // Szukamy linii zaczynajÄ…cych siÄ™ od numeru i kropki (np. "1. Zadanie")
                 if (line.match(/^\d+\./)) {
-                    // Wyciągamy tekst zadania (wszystko po numerze i kropce)
+                    // WyciÄ…gamy tekst zadania (wszystko po numerze i kropce)
                     const taskText = line.replace(/^\d+\.\s*/, '').trim();
 
                     if (taskText) {
-                        // Sprawdzamy następne linie w poszukiwaniu informacji o zadaniu
+                        // Sprawdzamy nastÄ™pne linie w poszukiwaniu informacji o zadaniu
                         let taskInfo = {
                             text: taskText,
                             status: 'available',
@@ -288,18 +288,18 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 }
                             }
 
-                            // Parsowanie informacji o ukończeniu
-                            if (infoLine.includes('Ukończone przez:')) {
-                                const completeMatch = infoLine.match(/Ukończone przez:\s*([^|]+)/);
+                            // Parsowanie informacji o ukoĹ„czeniu
+                            if (infoLine.includes('UkoĹ„czone przez:')) {
+                                const completeMatch = infoLine.match(/UkoĹ„czone przez:\s*([^|]+)/);
                                 if (completeMatch) {
                                     taskInfo.owner_name = completeMatch[1].trim();
                                     taskInfo.status = 'completed';
                                 }
                             }
 
-                            // Parsowanie informacji o twórcy
-                            if (infoLine.includes('Utworzył:')) {
-                                const creatorMatch = infoLine.match(/Utworzył:\s*([^|]+)/);
+                            // Parsowanie informacji o twĂłrcy
+                            if (infoLine.includes('UtworzyĹ‚:')) {
+                                const creatorMatch = infoLine.match(/UtworzyĹ‚:\s*([^|]+)/);
                                 if (creatorMatch) {
                                     taskInfo.created_by_name = creatorMatch[1].trim();
                                 }
@@ -320,7 +320,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 const newTask = await response.json();
                                 importedTasks.push(newTask);
 
-                                // Jeśli zadanie ma być przypisane lub ukończone, wykonujemy odpowiednie akcje
+                                // JeĹ›li zadanie ma byÄ‡ przypisane lub ukoĹ„czone, wykonujemy odpowiednie akcje
                                 if (taskInfo.status === 'taken' && taskInfo.owner_name === currentUser.username) {
                                     await fetch(`${API_URL}/${slug}/tasks/${newTask.id}/take`, {
                                         method: 'PATCH',
@@ -338,7 +338,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 }
                             }
                         } catch (error) {
-                            console.error('Błąd podczas importowania zadania:', error);
+                            console.error('BĹ‚Ä…d podczas importowania zadania:', error);
                         }
                     }
                 }
@@ -348,14 +348,14 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
 
             if (importedTasks.length > 0) {
                 await fetchTasks();
-                alert(`Zaimportowano ${importedTasks.length} zadań!`);
+                alert(`Zaimportowano ${importedTasks.length} zadaĹ„!`);
             } else {
-                alert('Nie znaleziono zadań do zaimportowania. Upewnij się, że plik zawiera zadania w formacie:\n\n1. Treść zadania\n2. Kolejne zadanie\n\nlub użyj pliku wyeksportowanego z aplikacji.');
+                alert('Nie znaleziono zadaĹ„ do zaimportowania. Upewnij siÄ™, ĹĽe plik zawiera zadania w formacie:\n\n1. TreĹ›Ä‡ zadania\n2. Kolejne zadanie\n\nlub uĹĽyj pliku wyeksportowanego z aplikacji.');
             }
         };
 
         reader.onerror = () => {
-            alert('Błąd podczas wczytywania pliku!');
+            alert('BĹ‚Ä…d podczas wczytywania pliku!');
         };
 
         reader.readAsText(file, 'UTF-8');
@@ -393,7 +393,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
             <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Ładowanie zadań...</p>
+                    <p className="text-gray-600">Ĺadowanie zadaĹ„...</p>
                 </div>
             </div>
         );
@@ -425,7 +425,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                 className="flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-lg hover:bg-teal-200 transition-colors"
                             >
                                 <QrCode className="w-5 h-5" />
-                                <span className="hidden sm:inline">Udostępnij</span>
+                                <span className="hidden sm:inline">UdostÄ™pnij</span>
                             </button>
                             <div className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-lg">
                                 <User className="w-5 h-5 text-gray-600" />
@@ -525,7 +525,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                             <h3 className="font-semibold text-gray-700 mb-3">Statystyki</h3>
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">Dostępne</span>
+                                    <span className="text-sm text-gray-600">DostÄ™pne</span>
                                     <span className="font-semibold text-green-600">
                                         {tasks.filter(t => t.status === 'available').length}
                                     </span>
@@ -537,7 +537,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-sm text-gray-600">Ukończone</span>
+                                    <span className="text-sm text-gray-600">UkoĹ„czone</span>
                                     <span className="font-semibold text-gray-600">
                                         {tasks.filter(t => t.status === 'completed').length}
                                     </span>
@@ -582,7 +582,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                         type="text"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        placeholder="Szukaj zadań..."
+                                        placeholder="Szukaj zadaĹ„..."
                                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
                                     />
                                 </div>
@@ -593,17 +593,17 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                             <h2 className="text-xl font-semibold text-gray-800">
                                 {activeView === 'all' && 'Wszystkie zadania'}
                                 {activeView === 'my' && 'Moje zadania'}
-                                {activeView === 'history' && 'Historia zadań'}
+                                {activeView === 'history' && 'Historia zadaĹ„'}
                             </h2>
                             <span className="text-sm text-gray-500">
-                                Znaleziono: {filteredTasks.length} zadań
+                                Znaleziono: {filteredTasks.length} zadaĹ„
                             </span>
                         </div>
 
                         <div className="space-y-3">
                             {filteredTasks.length === 0 ? (
                                 <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-                                    <p className="text-gray-500">Brak zadań do wyświetlenia</p>
+                                    <p className="text-gray-500">Brak zadaĹ„ do wyĹ›wietlenia</p>
                                 </div>
                             ) : (
                                 filteredTasks.map(task => (
@@ -639,7 +639,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                                     <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-gray-500">
                                                         <span className="flex items-center gap-1">
                                                             <User className="w-3 h-3" />
-                                                            Utworzył: {task.created_by_name}
+                                                            UtworzyĹ‚: {task.created_by_name}
                                                         </span>
                                                         <span className="flex items-center gap-1">
                                                             <Clock className="w-3 h-3" />
@@ -654,13 +654,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                                         {task.taken_at && (
                                                             <span className="flex items-center gap-1 text-orange-600">
                                                                 <Clock className="w-3 h-3" />
-                                                                Wzięte: {task.taken_at.toLocaleDateString()}
+                                                                WziÄ™te: {task.taken_at.toLocaleDateString()}
                                                             </span>
                                                         )}
                                                         {task.status === 'completed' && (
                                                             <span className="flex items-center gap-1 text-green-600">
                                                                 <Check className="w-3 h-3" />
-                                                                Ukończone: {task.completed_at?.toLocaleDateString()}
+                                                                UkoĹ„czone: {task.completed_at?.toLocaleDateString()}
                                                             </span>
                                                         )}
                                                     </div>
@@ -673,7 +673,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                                             className="bg-orange-600 text-white px-3 py-1 rounded-lg hover:bg-orange-700 transition-colors text-sm flex items-center gap-1"
                                                         >
                                                             <Hand className="w-4 h-4" />
-                                                            Weź
+                                                            WeĹş
                                                         </button>
                                                     )}
 
@@ -684,7 +684,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                                                 className="bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center gap-1"
                                                             >
                                                                 <Check className="w-4 h-4" />
-                                                                Ukończ
+                                                                UkoĹ„cz
                                                             </button>
                                                             <button
                                                                 onClick={() => returnTask(task.id)}
@@ -731,7 +731,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                         <div className="flex justify-between items-center mb-4">
                             <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                 <Share2 className="w-6 h-6 text-teal-600" />
-                                Udostępnij Tasklister
+                                UdostÄ™pnij Tasklister
                             </h3>
                             <button
                                 onClick={() => setShowQRModal(false)}
@@ -743,7 +743,7 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
 
                         <div className="text-center">
                             <p className="text-gray-600 mb-6">
-                                Zeskanuj kod QR, aby udostępnić tę instancję
+                                Zeskanuj kod QR, aby udostÄ™pniÄ‡ tÄ™ instancjÄ™
                             </p>
 
                             <div className="bg-gray-50 p-6 rounded-lg inline-block">
@@ -764,13 +764,13 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                     onClick={async () => {
                                         const url = window.location.href;
                                         try {
-                                            // Próbuj użyć nowoczesnego Clipboard API
+                                            // PrĂłbuj uĹĽyÄ‡ nowoczesnego Clipboard API
                                             if (navigator.clipboard && navigator.clipboard.writeText) {
                                                 await navigator.clipboard.writeText(url);
                                                 setCopySuccess(true);
                                                 setTimeout(() => setCopySuccess(false), 2000);
                                             } else {
-                                                // Fallback dla starszych przeglądarek
+                                                // Fallback dla starszych przeglÄ…darek
                                                 const textArea = document.createElement('textarea');
                                                 textArea.value = url;
                                                 textArea.style.position = 'fixed';
@@ -785,25 +785,25 @@ const TaskManager = ({ slug, currentUser, instanceData, onLogout, onShowAdminLog
                                                         setCopySuccess(true);
                                                         setTimeout(() => setCopySuccess(false), 2000);
                                                     } else {
-                                                        throw new Error('Nie udało się skopiować');
+                                                        throw new Error('Nie udaĹ‚o siÄ™ skopiowaÄ‡');
                                                     }
                                                 } catch (err) {
-                                                    throw new Error('Nie udało się skopiować linku');
+                                                    throw new Error('Nie udaĹ‚o siÄ™ skopiowaÄ‡ linku');
                                                 } finally {
                                                     document.body.removeChild(textArea);
                                                 }
                                             }
                                         } catch (err) {
-                                            alert('Nie udało się skopiować linku. Skopiuj go ręcznie: ' + url);
+                                            alert('Nie udaĹ‚o siÄ™ skopiowaÄ‡ linku. Skopiuj go rÄ™cznie: ' + url);
                                         }
                                     }}
                                     className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
-                                        copySuccess 
-                                            ? 'bg-green-500 text-white' 
+                                        copySuccess
+                                            ? 'bg-green-500 text-white'
                                             : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                     }`}
                                 >
-                                    {copySuccess ? '✓ Skopiowano!' : 'Kopiuj link'}
+                                    {copySuccess ? 'âś“ Skopiowano!' : 'Kopiuj link'}
                                 </button>
                                 <button
                                     onClick={() => {

@@ -28,14 +28,14 @@ const InstanceApp = () => {
             const data = await response.json();
 
             if (!response.ok || !data.exists) {
-                setError('Przestrzeń nie istnieje');
+                setError('PrzestrzeĹ„ nie istnieje');
                 setLoading(false);
                 return;
             }
 
             setInstanceData(data.company);
         } catch (err) {
-            setError('Błąd podczas sprawdzania przestrzeni');
+            setError('BĹ‚Ä…d podczas sprawdzania przestrzeni');
             setLoading(false);
         }
     };
@@ -76,7 +76,7 @@ const InstanceApp = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Błąd podczas logowania');
+                throw new Error(data.error || 'BĹ‚Ä…d podczas logowania');
             }
 
             localStorage.setItem('token', data.token);
@@ -86,7 +86,7 @@ const InstanceApp = () => {
             setCurrentUser(data.user);
             setShowUserLogin(false);
         } catch (err) {
-            alert(err.message || 'Nie udało się zalogować');
+            alert(err.message || 'Nie udaĹ‚o siÄ™ zalogowaÄ‡');
         }
     };
 
@@ -103,7 +103,7 @@ const InstanceApp = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Błąd podczas logowania');
+                throw new Error(data.error || 'BĹ‚Ä…d podczas logowania');
             }
 
             localStorage.setItem('token', data.token);
@@ -113,7 +113,7 @@ const InstanceApp = () => {
             setCurrentUser(data.user);
             setShowAdminLogin(false);
         } catch (err) {
-            alert(err.message || 'Nie udało się zalogować');
+            alert(err.message || 'Nie udaĹ‚o siÄ™ zalogowaÄ‡');
         }
     };
 
@@ -134,7 +134,7 @@ const InstanceApp = () => {
                 </div>
                 <div className="text-center relative z-10">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto mb-4"></div>
-                    <p className="text-gray-600">Ładowanie...</p>
+                    <p className="text-gray-600">Ĺadowanie...</p>
                 </div>
             </div>
         );
@@ -153,7 +153,7 @@ const InstanceApp = () => {
                         onClick={() => navigate('/')}
                         className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition-colors"
                     >
-                        Wróć do strony głównej
+                        WrĂłÄ‡ do strony gĹ‚Ăłwnej
                     </button>
                 </div>
             </div>
@@ -178,7 +178,7 @@ const InstanceApp = () => {
                                 <Sparkles className="w-8 h-8 text-white" />
                             </div>
                             <h1 className="text-4xl font-bold text-gray-800 mb-2 group-hover:text-teal-600 transition-colors">Tasklister</h1>
-                            <p className="text-gray-600">Zaloguj się do swojej przestrzeni</p>
+                            <p className="text-gray-600">Zaloguj siÄ™ do swojej przestrzeni</p>
                         </button>
                     </div>
 
@@ -186,12 +186,12 @@ const InstanceApp = () => {
                     <div className="w-full bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8">
                         <div className="text-center mb-6">
                             <div className="inline-block bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-xs font-medium mb-3">
-                                Przestrzeń
+                                PrzestrzeĹ„
                             </div>
                             <h1 className="text-3xl font-bold text-gray-800 mb-2">
                                 {instanceData?.company_name || slug}
                             </h1>
-                            <p className="text-gray-600">Zaloguj się, aby kontynuować</p>
+                            <p className="text-gray-600">Zaloguj siÄ™, aby kontynuowaÄ‡</p>
                         </div>
 
                         {showUserLogin && !showAdminLogin && (
@@ -199,12 +199,12 @@ const InstanceApp = () => {
                                 <div>
                                     <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
                                         <User className="w-4 h-4 inline mr-2" />
-                                        Twój nick
+                                        TwĂłj nick
                                     </label>
                                     <input
                                         type="text"
                                         id="username"
-                                        placeholder="Wpisz swój nick"
+                                        placeholder="Wpisz swĂłj nick"
                                         onKeyPress={(e) => {
                                             if (e.key === 'Enter' && e.target.value.trim()) {
                                                 handleUserLogin(e.target.value.trim());
@@ -224,7 +224,7 @@ const InstanceApp = () => {
                                     }}
                                     className="w-full bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors"
                                 >
-                                    Zaloguj się
+                                    Zaloguj siÄ™
                                 </button>
 
                                 <div className="pt-4 border-t border-gray-200">

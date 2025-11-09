@@ -1,8 +1,3 @@
-// =====================================================
-// TASKLISTER BACKEND API - Node.js + Express + PostgreSQL
-// =====================================================
-
-// Ładowanie zmiennych środowiskowych z pliku .env
 require('dotenv').config();
 
 const express = require('express');
@@ -15,10 +10,6 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-// =====================================================
-// KONFIGURACJA POSTGRESQL
-// =====================================================
-
 const pool = new Pool({
     user: process.env.DB_USER || 'postgres',
     host: process.env.DB_HOST || 'localhost',
@@ -27,37 +18,30 @@ const pool = new Pool({
     port: process.env.DB_PORT || 5432,
 });
 
-// Test połączenia z bazą danych
-pool.query('SELECT NOW()', (err, res) => {
+pool.query('SELECT NOW()', (err) => {
     if (err) {
-        console.error('❌ Błąd połączenia z bazą danych:', err.message);
-        console.error('💡 Sprawdź konfigurację w pliku .env:');
-        console.error('   - DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT');
-        // Usunięto błędy specyficzne dla lokalnego dev, ponieważ w Dockerze będą inne
+        console.error('? Błąd połączenia z bazą danych:', err.message);
+        console.error('?? Sprawdź konfigurację w pliku .env: DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT');
     } else {
-        console.log('✅ Połączono z bazą danych PostgreSQL');
+        console.log('? Połączono z bazą danych PostgreSQL');
         console.log(`   Baza: ${process.env.DB_NAME || 'tasklister'}`);
         console.log(`   Host: ${process.env.DB_HOST || 'localhost'}`);
     }
 });
 
-// =====================================================
-// MIDDLEWARE
-// =====================================================
-
-// *** POCZĄTEK MODYFIKACJI CORS ***
-// Konfiguracja CORS na podstawie Twojego pliku .env
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : [];
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+    .split(',')
+    .map(o => o.trim())
+    .filter(Boolean);
 
 if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
-    console.warn('⚠️ OSTRZEŻENIE: Serwer działa w trybie produkcyjnym, ale zmienna ALLOWED_ORIGINS nie jest ustawiona. Domyślnie CORS jest wyłączony.');
+    console.warn(' Serwer działa w trybie produkcyjnym, ale ALLOWED_ORIGINS nie jest ustawione.');
 }
+
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Pozwól na zapytania z dozwolonych domen (lub jeśli origin nie istnieje, np. z Postmana)
-        // W trybie innym niż 'production' pozwoli na wszystko.
-        if (process.env.NODE_ENV !== 'production' || !origin || allowedOrigins.indexOf(origin) !== -1) {
+        if (process.env.NODE_ENV !== 'production' || !origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             console.error(`Odrzucono zapytanie CORS z domeny: ${origin}`);
@@ -68,24 +52,16 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// Obsługa zapytań OPTIONS (pre-flight)
 app.options('*', cors(corsOptions));
-// *** KONIEC MODYFIKACJI CORS ***
-
-
 app.use(express.json());
 
-// Middleware do logowania requestów
 app.use((req, res, next) => {
-    // Loguj tylko jeśli nie jest to tryb testowy
     if (process.env.NODE_ENV !== 'test') {
         console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
     }
     next();
 });
 
-// Middleware do weryfikacji JWT
 const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -103,11 +79,6 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-// =====================================================
-// FUNKCJE POMOCNICZE
-// =====================================================
-
-// Generowanie slug z nazwy firmy
 function generateSlug(companyName) {
     return companyName
         .toLowerCase()
@@ -116,11 +87,6 @@ function generateSlug(companyName) {
         .replace(/^-+|-+$/g, '');
 }
 
-// =====================================================
-// ENDPOINTY API
-// =====================================================
-
-// ----- REJESTRACJA NOWEJ INSTANCJI (ADMIN) -----
 app.post('/api/register-instance', async (req, res) => {
     const { companyName, adminUsername, adminPassword } = req.body;
 
@@ -129,14 +95,13 @@ app.post('/api/register-instance', async (req, res) => {
     }
 
     const client = await pool.connect();
+
     try {
         await client.query('BEGIN');
 
-        // Generuj slug
         let slug = generateSlug(companyName);
         let counter = 1;
 
-        // Sprawdź unikalność slug
         while (true) {
             const checkSlug = await client.query(
                 'SELECT id FROM instances WHERE slug = $1',
@@ -147,7 +112,6 @@ app.post('/api/register-instance', async (req, res) => {
             counter++;
         }
 
-        // Utwórz instancję
         const instanceResult = await client.query(
             'INSERT INTO instances (slug, company_name) VALUES ($1, $2) RETURNING id, slug',
             [slug, companyName]
@@ -155,10 +119,8 @@ app.post('/api/register-instance', async (req, res) => {
         const instanceId = instanceResult.rows[0].id;
         const finalSlug = instanceResult.rows[0].slug;
 
-        // Hash hasła admina
         const passwordHash = await bcrypt.hash(adminPassword, 10);
 
-        // Utwórz konto admina
         const userResult = await client.query(
             'INSERT INTO users (instance_id, username, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id',
             [instanceId, adminUsername, passwordHash, 'admin']
@@ -166,9 +128,13 @@ app.post('/api/register-instance', async (req, res) => {
 
         await client.query('COMMIT');
 
-        // Wygeneruj token JWT
         const token = jwt.sign(
-            { userId: userResult.rows[0].id, instanceId, role: 'admin', username: adminUsername },
+            {
+                userId: userResult.rows[0].id,
+                instanceId,
+                role: 'admin',
+                username: adminUsername,
+            },
             JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -181,10 +147,9 @@ app.post('/api/register-instance', async (req, res) => {
             user: {
                 id: userResult.rows[0].id,
                 username: adminUsername,
-                role: 'admin'
-            }
+                role: 'admin',
+            },
         });
-
     } catch (error) {
         await client.query('ROLLBACK');
         console.error('Błąd podczas tworzenia instancji:', error);
@@ -194,7 +159,6 @@ app.post('/api/register-instance', async (req, res) => {
     }
 });
 
-// ----- LOGOWANIE ADMINA -----
 app.post('/api/login/admin', async (req, res) => {
     const { slug, username, password } = req.body;
 
@@ -203,7 +167,6 @@ app.post('/api/login/admin', async (req, res) => {
     }
 
     try {
-        // Znajdź instancję
         const instanceResult = await pool.query(
             'SELECT id FROM instances WHERE slug = $1',
             [slug]
@@ -215,7 +178,6 @@ app.post('/api/login/admin', async (req, res) => {
 
         const instanceId = instanceResult.rows[0].id;
 
-        // Znajdź admina
         const userResult = await pool.query(
             'SELECT id, username, password_hash, role FROM users WHERE instance_id = $1 AND username = $2 AND role = $3',
             [instanceId, username, 'admin']
@@ -226,22 +188,24 @@ app.post('/api/login/admin', async (req, res) => {
         }
 
         const user = userResult.rows[0];
-
-        // Sprawdź hasło
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
+
         if (!passwordMatch) {
             return res.status(401).json({ error: 'Nieprawidłowe dane logowania' });
         }
 
-        // Aktualizuj last_login
         await pool.query(
             'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1',
             [user.id]
         );
 
-        // Wygeneruj token
         const token = jwt.sign(
-            { userId: user.id, instanceId, role: user.role, username: user.username },
+            {
+                userId: user.id,
+                instanceId,
+                role: user.role,
+                username: user.username,
+            },
             JWT_SECRET,
             { expiresIn: '7d' }
         );
@@ -251,17 +215,15 @@ app.post('/api/login/admin', async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
-                role: user.role
-            }
+                role: user.role,
+            },
         });
-
     } catch (error) {
         console.error('Błąd podczas logowania admina:', error);
         res.status(500).json({ error: 'Błąd serwera' });
     }
 });
 
-// ----- LOGOWANIE UŻYTKOWNIKA (TYLKO NICKNAME) -----
 app.post('/api/login/user', async (req, res) => {
     const { slug, username } = req.body;
 
@@ -270,7 +232,6 @@ app.post('/api/login/user', async (req, res) => {
     }
 
     try {
-        // Znajdź instancję
         const instanceResult = await pool.query(
             'SELECT id FROM instances WHERE slug = $1',
             [slug]
@@ -282,15 +243,14 @@ app.post('/api/login/user', async (req, res) => {
 
         const instanceId = instanceResult.rows[0].id;
 
-        // Sprawdź czy użytkownik istnieje
         let userResult = await pool.query(
             'SELECT id, username, role FROM users WHERE instance_id = $1 AND username = $2',
             [instanceId, username]
         );
 
         let userId;
+
         if (userResult.rows.length === 0) {
-            // Utwórz nowego użytkownika
             const newUser = await pool.query(
                 'INSERT INTO users (instance_id, username, role) VALUES ($1, $2, $3) RETURNING id',
                 [instanceId, username, 'user']
@@ -300,13 +260,11 @@ app.post('/api/login/user', async (req, res) => {
             userId = userResult.rows[0].id;
         }
 
-        // Aktualizuj last_login
         await pool.query(
             'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = $1',
             [userId]
         );
 
-        // Wygeneruj token
         const token = jwt.sign(
             { userId, instanceId, role: 'user', username },
             JWT_SECRET,
@@ -318,38 +276,39 @@ app.post('/api/login/user', async (req, res) => {
             user: {
                 id: userId,
                 username,
-                role: 'user'
-            }
+                role: 'user',
+            },
         });
-
     } catch (error) {
         console.error('Błąd podczas logowania użytkownika:', error);
         res.status(500).json({ error: 'Błąd serwera' });
     }
 });
 
-// ----- POBIERZ WSZYSTKIE ZADANIA DLA INSTANCJI -----
 app.get('/api/:slug/tasks', authenticateToken, async (req, res) => {
     const { slug } = req.params;
 
     try {
-        const result = await pool.query(`
-            SELECT
-                t.id,
-                t.text,
-                t.status,
-                t.created_by_name,
-                t.created_at,
-                t.owner_name,
-                t.taken_at,
-                t.completed_at,
-                t.edited_by_name,
-                t.edited_at
-            FROM tasks t
-                     JOIN instances i ON t.instance_id = i.id
-            WHERE i.slug = $1
-            ORDER BY t.created_at DESC
-        `, [slug]);
+        const result = await pool.query(
+            `
+      SELECT
+        t.id,
+        t.text,
+        t.status,
+        t.created_by_name,
+        t.created_at,
+        t.owner_name,
+        t.taken_at,
+        t.completed_at,
+        t.edited_by_name,
+        t.edited_at
+      FROM tasks t
+      JOIN instances i ON t.instance_id = i.id
+      WHERE i.slug = $1
+      ORDER BY t.created_at DESC
+      `,
+            [slug]
+        );
 
         res.json(result.rows);
     } catch (error) {
@@ -358,7 +317,6 @@ app.get('/api/:slug/tasks', authenticateToken, async (req, res) => {
     }
 });
 
-// ----- DODAJ NOWE ZADANIE -----
 app.post('/api/:slug/tasks', authenticateToken, async (req, res) => {
     const { slug } = req.params;
     const { text } = req.body;
@@ -380,11 +338,14 @@ app.post('/api/:slug/tasks', authenticateToken, async (req, res) => {
 
         const instanceId = instanceResult.rows[0].id;
 
-        const result = await pool.query(`
-            INSERT INTO tasks (instance_id, text, status, created_by_id, created_by_name)
-            VALUES ($1, $2, $3, $4, $5)
-                RETURNING *
-        `, [instanceId, text, 'available', userId, username]);
+        const result = await pool.query(
+            `
+      INSERT INTO tasks (instance_id, text, status, created_by_id, created_by_name)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+      `,
+            [instanceId, text, 'available', userId, username]
+        );
 
         res.status(201).json(result.rows[0]);
     } catch (error) {
@@ -393,21 +354,23 @@ app.post('/api/:slug/tasks', authenticateToken, async (req, res) => {
     }
 });
 
-// ----- WEŹ ZADANIE -----
 app.patch('/api/:slug/tasks/:taskId/take', authenticateToken, async (req, res) => {
     const { taskId } = req.params;
     const { userId, username } = req.user;
 
     try {
-        const result = await pool.query(`
-            UPDATE tasks
-            SET status = 'taken',
-                owner_id = $1,
-                owner_name = $2,
-                taken_at = CURRENT_TIMESTAMP
-            WHERE id = $3 AND status = 'available'
-                RETURNING *
-        `, [userId, username, taskId]);
+        const result = await pool.query(
+            `
+      UPDATE tasks
+      SET status = 'taken',
+          owner_id = $1,
+          owner_name = $2,
+          taken_at = CURRENT_TIMESTAMP
+      WHERE id = $3 AND status = 'available'
+      RETURNING *
+      `,
+            [userId, username, taskId]
+        );
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Zadanie nie istnieje lub jest już wzięte' });
@@ -420,19 +383,21 @@ app.patch('/api/:slug/tasks/:taskId/take', authenticateToken, async (req, res) =
     }
 });
 
-// ----- UKOŃCZ ZADANIE -----
 app.patch('/api/:slug/tasks/:taskId/complete', authenticateToken, async (req, res) => {
     const { taskId } = req.params;
     const { userId } = req.user;
 
     try {
-        const result = await pool.query(`
-            UPDATE tasks
-            SET status = 'completed',
-                completed_at = CURRENT_TIMESTAMP
-            WHERE id = $1 AND owner_id = $2 AND status = 'taken'
-                RETURNING *
-        `, [taskId, userId]);
+        const result = await pool.query(
+            `
+      UPDATE tasks
+      SET status = 'completed',
+          completed_at = CURRENT_TIMESTAMP
+      WHERE id = $1 AND owner_id = $2 AND status = 'taken'
+      RETURNING *
+      `,
+            [taskId, userId]
+        );
 
         if (result.rows.length === 0) {
             return res.status(403).json({ error: 'Nie masz uprawnień do ukończenia tego zadania' });
@@ -445,21 +410,23 @@ app.patch('/api/:slug/tasks/:taskId/complete', authenticateToken, async (req, re
     }
 });
 
-// ----- ODDAJ ZADANIE -----
 app.patch('/api/:slug/tasks/:taskId/return', authenticateToken, async (req, res) => {
     const { taskId } = req.params;
     const { userId } = req.user;
 
     try {
-        const result = await pool.query(`
-            UPDATE tasks
-            SET status = 'available',
-                owner_id = NULL,
-                owner_name = NULL,
-                taken_at = NULL
-            WHERE id = $1 AND owner_id = $2 AND status = 'taken'
-                RETURNING *
-        `, [taskId, userId]);
+        const result = await pool.query(
+            `
+      UPDATE tasks
+      SET status = 'available',
+          owner_id = NULL,
+          owner_name = NULL,
+          taken_at = NULL
+      WHERE id = $1 AND owner_id = $2 AND status = 'taken'
+      RETURNING *
+      `,
+            [taskId, userId]
+        );
 
         if (result.rows.length === 0) {
             return res.status(403).json({ error: 'Nie masz uprawnień do oddania tego zadania' });
@@ -472,7 +439,6 @@ app.patch('/api/:slug/tasks/:taskId/return', authenticateToken, async (req, res)
     }
 });
 
-// ----- EDYTUJ ZADANIE -----
 app.patch('/api/:slug/tasks/:taskId', authenticateToken, async (req, res) => {
     const { taskId } = req.params;
     const { text } = req.body;
@@ -483,7 +449,6 @@ app.patch('/api/:slug/tasks/:taskId', authenticateToken, async (req, res) => {
     }
 
     try {
-        // Sprawdź uprawnienia: admin lub twórca zadania
         const checkResult = await pool.query(
             'SELECT created_by_id FROM tasks WHERE id = $1',
             [taskId]
@@ -497,15 +462,18 @@ app.patch('/api/:slug/tasks/:taskId', authenticateToken, async (req, res) => {
             return res.status(403).json({ error: 'Nie masz uprawnień do edycji tego zadania' });
         }
 
-        const result = await pool.query(`
-            UPDATE tasks
-            SET text = $1,
-                edited_by_id = $2,
-                edited_by_name = $3,
-                edited_at = CURRENT_TIMESTAMP
-            WHERE id = $4
-                RETURNING *
-        `, [text, userId, username, taskId]);
+        const result = await pool.query(
+            `
+      UPDATE tasks
+      SET text = $1,
+          edited_by_id = $2,
+          edited_by_name = $3,
+          edited_at = CURRENT_TIMESTAMP
+      WHERE id = $4
+      RETURNING *
+      `,
+            [text, userId, username, taskId]
+        );
 
         res.json(result.rows[0]);
     } catch (error) {
@@ -514,7 +482,6 @@ app.patch('/api/:slug/tasks/:taskId', authenticateToken, async (req, res) => {
     }
 });
 
-// ----- USUŃ ZADANIE (TYLKO ADMIN) -----
 app.delete('/api/:slug/tasks/:taskId', authenticateToken, async (req, res) => {
     const { taskId } = req.params;
     const { role } = req.user;
@@ -540,7 +507,6 @@ app.delete('/api/:slug/tasks/:taskId', authenticateToken, async (req, res) => {
     }
 });
 
-// ----- SPRAWDŹ CZY INSTANCJA ISTNIEJE -----
 app.get('/api/check-instance/:slug', async (req, res) => {
     const { slug } = req.params;
 
@@ -561,16 +527,11 @@ app.get('/api/check-instance/:slug', async (req, res) => {
     }
 });
 
-// =====================================================
-// START SERWERA
-// =====================================================
-
 app.listen(PORT, () => {
-    console.log(`🚀 Serwer działa na porcie ${PORT}`);
-    console.log(`📍 Dostępny w sieci Docker pod adresem http://backend:${PORT}`);
+    console.log(`?? Serwer działa na porcie ${PORT}`);
+    console.log(`?? Dostępny w sieci Docker pod adresem http://backend:${PORT}`);
 });
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
     console.log('SIGTERM otrzymany, zamykanie...');
     pool.end(() => {

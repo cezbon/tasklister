@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, User, Lock, ArrowRight, Sparkles, Shield, X } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_URL = (process.env.REACT_APP_API_URL || 'https://api.tasklister.pl/api')
+    .replace(/\/+$/, '');
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -24,7 +25,7 @@ const HomePage = () => {
         setLoading(true);
 
         if (!formData.companyName.trim() || !formData.adminUsername.trim() || !formData.adminPassword.trim()) {
-            setError('Wszystkie pola są wymagane');
+            setError('Wszystkie pola sÄ… wymagane');
             setLoading(false);
             return;
         }
@@ -41,7 +42,7 @@ const HomePage = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Błąd podczas rejestracji');
+                throw new Error(data.error || 'BĹ‚Ä…d podczas rejestracji');
             }
 
             localStorage.setItem('token', data.token);
@@ -50,7 +51,7 @@ const HomePage = () => {
 
             navigate(`/${data.slug}`);
         } catch (err) {
-            setError(err.message || 'Nie udało się utworzyć przestrzeni');
+            setError(err.message || 'Nie udaĹ‚o siÄ™ utworzyÄ‡ przestrzeni');
         } finally {
             setLoading(false);
         }
@@ -82,7 +83,7 @@ const HomePage = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Błąd podczas logowania');
+                throw new Error(data.error || 'BĹ‚Ä…d podczas logowania');
             }
 
             localStorage.setItem('token', data.token);
@@ -91,7 +92,7 @@ const HomePage = () => {
 
             navigate(`/${slug.trim()}`);
         } catch (err) {
-            setAdminLoginError(err.message || 'Nie udało się zalogować');
+            setAdminLoginError(err.message || 'Nie udaĹ‚o siÄ™ zalogowaÄ‡');
             throw err;
         }
     };
@@ -114,7 +115,7 @@ const HomePage = () => {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Błąd podczas logowania');
+                throw new Error(data.error || 'BĹ‚Ä…d podczas logowania');
             }
 
             localStorage.setItem('token', data.token);
@@ -123,7 +124,7 @@ const HomePage = () => {
 
             navigate(`/${slug.trim()}`);
         } catch (err) {
-            setUserLoginError(err.message || 'Nie udało się zalogować');
+            setUserLoginError(err.message || 'Nie udaĹ‚o siÄ™ zalogowaÄ‡');
             throw err;
         }
     };
@@ -143,7 +144,7 @@ const HomePage = () => {
                             <Sparkles className="w-8 h-8 text-white" />
                         </div>
                         <h1 className="text-4xl font-bold text-gray-800 mb-2">Tasklister</h1>
-                        <p className="text-gray-600">Prosty menedżer zadań dla Ciebie i Twojego zespołu</p>
+                        <p className="text-gray-600">Prosty menedĹĽer zadaĹ„ dla Ciebie i Twojego zespoĹ‚u</p>
                     </div>
                 </div>
 
@@ -167,19 +168,19 @@ const HomePage = () => {
                                 name="companyName"
                                 value={formData.companyName}
                                 onChange={handleChange}
-                                placeholder="np. Mój Projekt, Zespół Alpha, Dom"
+                                placeholder="np. MĂłj Projekt, ZespĂłĹ‚ Alpha, Dom"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                 required
                             />
                             <p className="mt-1 text-xs text-gray-500">
-                                Przestrzeń będzie dostępna pod adresem: tasklister.pl/[nazwa]
+                                PrzestrzeĹ„ bÄ™dzie dostÄ™pna pod adresem: tasklister.pl/[nazwa]
                             </p>
                         </div>
 
                         <div>
                             <label htmlFor="adminUsername" className="block text-sm font-medium text-gray-700 mb-2">
                                 <User className="w-4 h-4 inline mr-2" />
-                                Twój login
+                                TwĂłj login
                             </label>
                             <input
                                 type="text"
@@ -196,7 +197,7 @@ const HomePage = () => {
                         <div>
                             <label htmlFor="adminPassword" className="block text-sm font-medium text-gray-700 mb-2">
                                 <Lock className="w-4 h-4 inline mr-2" />
-                                Hasło
+                                HasĹ‚o
                             </label>
                             <input
                                 type="password"
@@ -204,7 +205,7 @@ const HomePage = () => {
                                 name="adminPassword"
                                 value={formData.adminPassword}
                                 onChange={handleChange}
-                                placeholder="Wprowadź bezpieczne hasło"
+                                placeholder="WprowadĹş bezpieczne hasĹ‚o"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                 required
                                 minLength={6}
@@ -223,7 +224,7 @@ const HomePage = () => {
                                 </>
                             ) : (
                                 <>
-                                    Utwórz przestrzeń
+                                    UtwĂłrz przestrzeĹ„
                                     <ArrowRight className="w-5 h-5" />
                                 </>
                             )}
@@ -233,7 +234,7 @@ const HomePage = () => {
                     <div className="mt-6 pt-6 border-t border-gray-200">
                         <p className="text-xs text-gray-500 text-center mb-4">
                             Po utworzeniu przestrzeni zostaniesz automatycznie zalogowany jako administrator.
-                            Będziesz mógł zarządzać wszystkimi zadaniami i zapraszać inne osoby.
+                            BÄ™dziesz mĂłgĹ‚ zarzÄ…dzaÄ‡ wszystkimi zadaniami i zapraszaÄ‡ inne osoby.
                         </p>
                         <div className="text-center space-y-2">
                             <button
@@ -248,7 +249,7 @@ const HomePage = () => {
                                 className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-800 transition-colors text-sm mx-auto"
                             >
                                 <User className="w-4 h-4" />
-                                Zaloguj się jako użytkownik
+                                Zaloguj siÄ™ jako uĹĽytkownik
                             </button>
                         </div>
                     </div>
@@ -257,7 +258,7 @@ const HomePage = () => {
                 {/* Footer Container */}
                 <div className="mt-6 mb-8 md:mb-0 bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-6">
                     <p className="text-center text-sm text-gray-500">
-                        Lub przejdź bezpośrednio do: <a href="/" className="text-teal-600 hover:text-teal-700 font-medium">tasklister.pl/[nazwa]</a>
+                        Lub przejdĹş bezpoĹ›rednio do: <a href="/" className="text-teal-600 hover:text-teal-700 font-medium">tasklister.pl/[nazwa]</a>
                     </p>
                 </div>
             </div>
@@ -292,14 +293,14 @@ const HomePage = () => {
                             const password = formData.get('password') || '';
 
                             if (!slug || !username || !password) {
-                                setAdminLoginError('Wszystkie pola są wymagane');
+                                setAdminLoginError('Wszystkie pola sÄ… wymagane');
                                 return;
                             }
 
                             try {
                                 await handleAdminLogin(slug, username, password);
                             } catch (err) {
-                                // Błąd już jest ustawiony
+                                // BĹ‚Ä…d juĹĽ jest ustawiony
                             }
                         }} className="space-y-4">
                             {adminLoginError && (
@@ -342,13 +343,13 @@ const HomePage = () => {
                             <div>
                                 <label htmlFor="modal-password" className="block text-sm font-medium text-gray-700 mb-2">
                                     <Lock className="w-4 h-4 inline mr-2" />
-                                    Hasło
+                                    HasĹ‚o
                                 </label>
                                 <input
                                     type="password"
                                     id="modal-password"
                                     name="password"
-                                    placeholder="Wpisz hasło"
+                                    placeholder="Wpisz hasĹ‚o"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     required
                                 />
@@ -369,7 +370,7 @@ const HomePage = () => {
                                     type="submit"
                                     className="flex-1 bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
                                 >
-                                    Zaloguj się
+                                    Zaloguj siÄ™
                                     <ArrowRight className="w-5 h-5" />
                                 </button>
                             </div>
@@ -378,14 +379,14 @@ const HomePage = () => {
                 </div>
             )}
 
-            {/* Modal logowania jako użytkownik */}
+            {/* Modal logowania jako uĹĽytkownik */}
             {showUserLogin && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-8 max-w-md w-full">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                                 <User className="w-5 h-5 text-teal-600" />
-                                Logowanie użytkownika
+                                Logowanie uĹĽytkownika
                             </h2>
                             <button
                                 onClick={() => {
@@ -407,14 +408,14 @@ const HomePage = () => {
                             const username = formData.get('user-username')?.trim() || '';
 
                             if (!slug || !username) {
-                                setUserLoginError('Wszystkie pola są wymagane');
+                                setUserLoginError('Wszystkie pola sÄ… wymagane');
                                 return;
                             }
 
                             try {
                                 await handleUserLogin(slug, username);
                             } catch (err) {
-                                // Błąd już jest ustawiony
+                                // BĹ‚Ä…d juĹĽ jest ustawiony
                             }
                         }} className="space-y-4">
                             {userLoginError && (
@@ -442,13 +443,13 @@ const HomePage = () => {
                             <div>
                                 <label htmlFor="user-username" className="block text-sm font-medium text-gray-700 mb-2">
                                     <User className="w-4 h-4 inline mr-2" />
-                                    Twój nick
+                                    TwĂłj nick
                                 </label>
                                 <input
                                     type="text"
                                     id="user-username"
                                     name="user-username"
-                                    placeholder="Wpisz swój nick"
+                                    placeholder="Wpisz swĂłj nick"
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                                     required
                                 />
@@ -469,7 +470,7 @@ const HomePage = () => {
                                     type="submit"
                                     className="flex-1 bg-teal-600 text-white py-3 rounded-lg font-semibold hover:bg-teal-700 transition-colors flex items-center justify-center gap-2"
                                 >
-                                    Zaloguj się
+                                    Zaloguj siÄ™
                                     <ArrowRight className="w-5 h-5" />
                                 </button>
                             </div>

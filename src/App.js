@@ -8,13 +8,13 @@ function App() {
         <Router>
             <div>
                 <Routes>
-                    {/* Strona główna - rejestracja nowej instancji */}
+                    {/* Strona gĹ‚Ăłwna - rejestracja nowej instancji */}
                     <Route path="/" element={<HomePage />} />
 
                     {/* Instancja aplikacji - /:slug */}
                     <Route path="/:slug" element={<InstanceApp />} />
 
-                    {/* Redirect dla nieznanych ścieżek */}
+                    {/* Redirect dla nieznanych Ĺ›cieĹĽek */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </div>
@@ -28,27 +28,27 @@ function App() {
                 }}
             >
                 <span className="opacity-60">&gt;</span>&nbsp;
-                smile, you’re alive — <span className="text-green-700 font-semibold">cez</span>&nbsp;
+                smile, youâ€™re alive â€” <span className="text-green-700 font-semibold">cez</span>&nbsp;
                 <span className="opacity-80 animate-blink">_</span>
             </footer>
 
             <style jsx>{`
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fadeIn {
-    animation: fadeIn 1.5s ease-out;
-  }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fadeIn {
+                    animation: fadeIn 1.5s ease-out;
+                }
 
-  @keyframes blink {
-    0%, 50%, 100% { opacity: 0.2; }
-    25%, 75% { opacity: 1; }
-  }
-  .animate-blink {
-    animation: blink 1s infinite;
-  }
-`}</style>
+                @keyframes blink {
+                    0%, 50%, 100% { opacity: 0.2; }
+                    25%, 75% { opacity: 1; }
+                }
+                .animate-blink {
+                    animation: blink 1s infinite;
+                }
+            `}</style>
 
         </Router>
     );

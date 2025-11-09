@@ -14,7 +14,7 @@ const LoginModal = ({ onLogin, onCancel }) => {
         setError('');
 
         if (!formData.username.trim() || !formData.password.trim()) {
-            setError('Wszystkie pola są wymagane');
+            setError('Wszystkie pola sÄ… wymagane');
             return;
         }
 
@@ -22,7 +22,7 @@ const LoginModal = ({ onLogin, onCancel }) => {
         try {
             await onLogin(formData.username.trim(), formData.password);
         } catch (err) {
-            setError(err.message || 'Błąd podczas logowania');
+            setError(err.message || 'BĹ‚Ä…d podczas logowania');
         } finally {
             setLoading(false);
         }
@@ -78,7 +78,7 @@ const LoginModal = ({ onLogin, onCancel }) => {
                 <div>
                     <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                         <Lock className="w-4 h-4 inline mr-2" />
-                        Hasło
+                        HasĹ‚o
                     </label>
                     <input
                         type="password"
@@ -86,7 +86,7 @@ const LoginModal = ({ onLogin, onCancel }) => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="Wpisz hasło"
+                        placeholder="Wpisz hasĹ‚o"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
                         required
                     />
@@ -112,7 +112,7 @@ const LoginModal = ({ onLogin, onCancel }) => {
                             </>
                         ) : (
                             <>
-                                Zaloguj się
+                                Zaloguj siÄ™
                                 <ArrowRight className="w-5 h-5" />
                             </>
                         )}
